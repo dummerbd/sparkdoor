@@ -20,6 +20,7 @@ INSTALLED_APPS = (
 
     # our apps:
     'sparkdoor.apps.common',
+    'groundwork',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -52,6 +53,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
 )
 
-STATICFILE_DIRS = (
-    os.path.join(BASE_DIR, 'sparkdoor/static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'sparkdoor/static'),
 )

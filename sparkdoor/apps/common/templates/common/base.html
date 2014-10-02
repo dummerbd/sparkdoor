@@ -1,7 +1,80 @@
+{% load static %}
+{% load groundwork_tags %}
+
 <!DOCTYPE html>
 <html>
-  <head>
-  </head>
-  <body>
-  </body>
+<head>
+  {% block meta %}{% endblock meta %}
+
+  <title>SparkDoor{% block title %}{% endblock title %}</title>
+
+  {# Base Foundation CSS #}
+  {% block groundwork_css %}
+  {% groundwork_css "normalize" %}
+  {% groundwork_css "foundation.min" %}
+  {% groundwork_css "foundation-icons" %}
+  {% endblock groundwork_css %}
+  {# Custom CSS #}
+  {% block css %}
+  <link rel="stylesheet" type="text/css" href="{% static "css/style.css" %}" />
+  {% endblock css %}
+
+  {# Base head JS #}
+  {% block base_js %}
+  {# This will need to be updated to a custom build when we go to production #}
+  <script src="http://modernizr.com/downloads/modernizr-latest.js"></script>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  {% endblock base_js %}
+
+  {# Custom head JS #}
+  {% block head_js %}
+  {% endblock head_js %}
+</head>
+<body {% block body_attr %}{% endblock body_attr %}>
+
+  {% block header %}
+  <!-- Navigation -->
+  <div class="contain-to-grid">
+    <nav class="top-bar" data-topbar>
+      <h1 id="heading"><a href="#">SparkDoor</a></h1>
+      <a id="login" href="#">Login</a>
+    </nav>
+  </div>
+  <!-- End Navigation -->
+  {% endblock header %}
+
+  <div class="row main_content">
+    <!-- Content -->
+    <main class="large-12 columns">
+      {% block messages %}
+      {% for msg in messages %}
+      {% groundwork_alert msg msg.level %}
+      {% endfor %}
+      {% endblock messages %}
+
+      {% block base_content %}
+      {% block content %}{% endblock content %}
+      {% endblock base_content %}
+    </main>
+    <!-- End Content -->
+
+    <!-- Footer -->
+    {% block footer %}
+  </div>
+  {% endblock footer %}
+  <!-- End Footer -->
+
+  {% groundwork_js %}
+
+  {# Custom JS #}
+  {% block body_js %}{% endblock body_js %}
+
+  {# Init Foundation #}
+  {% block foundation_js_init %}
+  <script>
+  $(document).foundation();
+  </script>
+  {% endblock foundation_js_init %}
+</body>
 </html>

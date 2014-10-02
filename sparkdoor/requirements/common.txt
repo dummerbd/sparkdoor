@@ -1,6 +1,0 @@
-Django==1.6.5
-django-braces==1.4.0
-django-groundwork==0.2.5
-djangorestframework==2.4.3
-psycopg2==2.5.4
-six==1.8.0

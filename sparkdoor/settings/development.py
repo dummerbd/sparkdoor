@@ -1,6 +1,10 @@
+"""
+development.py - development-specific settings module.
+"""
 import os
 
 from .base import *
+
 
 DEBUG = True
 
@@ -8,9 +12,6 @@ TEMPLATE_DEBUG = True
 
 _db_user = os.environ['SPARK_DATABASE_USER']
 _db_pass = os.environ['SPARK_DATABASE_PASSWORD']
-
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -38,7 +39,6 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # show all messages
 MESSAGE_LEVEL = 10
 
-# this ID corres
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 WSGI_APPLICATION = 'sparkdoor.dev_wsgi.application'

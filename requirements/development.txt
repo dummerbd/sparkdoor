@@ -1,0 +1,5 @@
+-r common.txt
+
+coverage==3.7
+django-debug-toolbar==1.2
+factory-boy==2.4

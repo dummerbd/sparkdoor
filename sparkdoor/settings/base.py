@@ -33,8 +33,6 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'sparkdoor.urls'
 
-WSGI_APPLICATION = 'sparkdoor.wsgi.application'
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'

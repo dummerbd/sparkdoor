@@ -1,1 +1,40 @@
 {% extends 'common/base.html' %}
+
+{% load i18n %}
+{% load account %}
+{% load groundwork_tags %}
+
+{% block content %}
+<div class="contain-to-grid">
+  <div class="login-box">
+    <form class="login" method="POST" action="{% url 'account_login' %}">
+      {% csrf_token %}
+      <div class="form-row {% if form.login.errors %}error{% endif %}">
+        <label for="id_login" class="required">{{ form.login.label }}:</label>
+        {{ form.login }}
+        {% for login_error in form.login.errors %}
+        <small class="error">{{ login_error }}</small>
+        {% endfor %}
+      </div>
+      <div class="form-row {% if form.password.errors %}error{% endif %}">
+        <label for="id_password" class="required">{% trans 'Password:' %}</label>
+        {{ form.password }}
+        {% for password_error in form.password.errors %}
+        <small class="error">{{ password_error }}</small>
+        {% endfor %}
+      </div>
+      <div class="form-row">
+        <label for="id_remember">Remember me
+          {{ form.remember }}
+        </label>
+      </div>
+      {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+      <button class="primaryAction" type="submit">{% trans "Sign In" %}</button><br><br>
+      <a class="secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+    </form>
+  </div>
+</div>
+
+{% endblock content %}

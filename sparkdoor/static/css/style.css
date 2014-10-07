@@ -1,6 +1,7 @@
 .top-bar {
     height: 200px;
     background-image:url('/static/img/blueprint.jpg');
+    background-repeat: repeat;
 }
 
 #heading {
@@ -31,4 +32,8 @@
     right:20px;
     top:0px;
     color: #FFFFFF;
+}
+
+.login-box {
+    box-shadow: 10px 10px 5px #88888;
 }

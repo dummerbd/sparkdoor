@@ -17,6 +17,9 @@ urlpatterns = patterns('',
     url(r'^',
         include('sparkdoor.apps.common.urls', namespace='common')
     ),
+
+    # allauth
+    (r'^accounts/', include('allauth.urls')),
 )
 
 if settings.DEBUG:

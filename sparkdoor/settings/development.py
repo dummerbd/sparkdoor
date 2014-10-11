@@ -40,5 +40,3 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 MESSAGE_LEVEL = 10
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-WSGI_APPLICATION = 'sparkdoor.dev_wsgi.application'

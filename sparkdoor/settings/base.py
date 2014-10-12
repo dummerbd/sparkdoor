@@ -148,3 +148,8 @@ LOGGING = {
         },
     }
 }
+
+# Celery settings
+BROKER_URL = os.environ['SPARK_CELERY_BROKER_URL']
+
+CELERY_ACCEPT_CONTENT = ['pickle']

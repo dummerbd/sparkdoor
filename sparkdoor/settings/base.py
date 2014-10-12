@@ -97,3 +97,54 @@ STATICFILES_DIRS = (
 LOGIN_REDIRECT_URL = '/'
 
 ADMIN_LOGIN_REDIRECT_URL = '/admin'
+
+LOGGING = {
+    'version': 1,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(name)s [%(process)d] %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'fallback': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['fallback'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.db': {
+            'handlers': ['fallback'],
+            'level': 'INFO',
+            'propogate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propogate': False,
+        },
+        'django.security': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propogate': False,
+        },
+        'bip': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propogate': False,
+        },
+    }
+}

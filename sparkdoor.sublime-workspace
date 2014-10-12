@@ -7,6 +7,22 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "sparkdoor/settings/heroku.py",
+			"settings":
+			{
+				"buffer_size": 819,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "sparkdoor/settings/development.py",
+			"settings":
+			{
+				"buffer_size": 953,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -44,10 +60,26 @@
 	},
 	"expanded_folders":
 	[
-		"/home/ben/repos/sparkdoor"
+		"/home/ben/repos/sparkdoor",
+		"/home/ben/repos/sparkdoor/sparkdoor"
 	],
 	"file_history":
 	[
+		"/home/ben/repos/sparkdoor/sparkdoor/settings/base.py",
+		"/home/ben/repos/sparkdoor/sparkdoor/wsgi/heroku.py",
+		"/home/ben/repos/sparkdoor/sparkdoor/wsgi/development.py",
+		"/home/ben/repos/sparkdoor/sparkdoor/settings/heroku.py",
+		"/home/ben/repos/sparkdoor/Procfile",
+		"/home/ben/repos/sparkdoor/requirements.txt",
+		"/home/ben/repos/sparkdoor/sparkdoor/settings/requirements.txt",
+		"/home/ben/repos/sparkdoor/runtime.txt",
+		"/home/ben/repos/sparkdoor/requirements/heroku.txt",
+		"/home/ben/repos/sparkdoor/.gitignore",
+		"/home/ben/repos/sparkdoor/sparkdoor/celery.py",
+		"/home/ben/repos/sparkdoor/manage.py",
+		"/home/ben/repos/sparkdoor/requirements/common.txt",
+		"/home/ben/repos/sparkdoor/sparkdoor/__init__.py",
+		"/home/ben/repos/sparkdoor/sparkdoor/settings/development.py",
 		"/home/ben/repos/bip2/bip/apps/erk/reports.py",
 		"/home/ben/repos/bip2/bip/apps/erk/sources.py",
 		"/home/ben/repos/bip2/bip/settings/base.py",
@@ -160,22 +192,7 @@
 		"/home/ben/repos/bip2/bip/apps/erk/erk_source_detail.html",
 		"/home/ben/repos/bip2/bip/apps/ushbs/templates/ushbs/ushbs_source_list.html",
 		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/erk_source_list.html",
-		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/reports/erk_sources_list.html",
-		"/home/ben/repos/bip2/bip/apps/erk/admin.py",
-		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/404.html",
-		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/500.html",
-		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/403.html",
-		"/home/ben/repos/bip2/bip/templates/500.html",
-		"/home/ben/repos/bip2/bip/templates/404.html",
-		"/home/ben/repos/bip2/bip/templates/403.html",
-		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/source_list.html",
-		"/home/ben/repos/bip2/bip/apps/core/tests/test_models.py",
-		"/home/ben/repos/bip2/bip/apps/core/models.py",
-		"/home/ben/repos/bip2/bip/apps/reports/models.py",
-		"/home/ben/repos/bip2/bip/apps/reports/tests/test_models.py",
-		"/home/ben/repos/bip2/bip/apps/core/templates/core/base.html",
-		"/home/ben/repos/bip2/bip/apps/reports/tests/test_reports.py",
-		"/home/ben/repos/bip2/bip/apps/reports/tests/factories.py"
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/reports/erk_sources_list.html"
 	],
 	"find":
 	{
@@ -243,6 +260,68 @@
 	"groups":
 	[
 		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "sparkdoor/settings/heroku.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 819,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								535,
+								535
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "sparkdoor/settings/development.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 953,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								939,
+								939
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Djaneiro/Syntaxes/Python Django.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		},
+		{
 			"sheets":
 			[
 			]
@@ -265,11 +344,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.5,
 			1.0
 		],
 		"rows":
@@ -321,7 +407,7 @@
 		],
 		"width": 0.0
 	},
-	"selected_group": 0,
+	"selected_group": 1,
 	"settings":
 	{
 	},

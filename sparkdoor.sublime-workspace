@@ -1,0 +1,337 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 375.0,
+		"selected_items":
+		[
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"pack",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 453.0
+	},
+	"console":
+	{
+		"height": 131.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/home/ben/repos/sparkdoor"
+	],
+	"file_history":
+	[
+		"/home/ben/repos/bip2/bip/apps/erk/reports.py",
+		"/home/ben/repos/bip2/bip/apps/erk/sources.py",
+		"/home/ben/repos/bip2/bip/settings/base.py",
+		"/home/ben/repos/bip2/bip/apps/erk/models.py",
+		"/home/ben/repos/bip2/bip/apps/erk/tests/test_reports.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/reports.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/tests/test_reports.py",
+		"/home/ben/repos/bip2/bip/apps/erk/tests/test_sources.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/sources.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/tests/test_sources.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/tests/test_models.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/models.py",
+		"/home/ben/repos/bip2/bip/apps/erk/tests/test_models.py",
+		"/home/ben/repos/bip2/raw/importers.py",
+		"/home/ben/repos/bip2/raw/erk_pesticide_raw.csv",
+		"/home/ben/repos/bip2/bip/apps/erk/forms.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/forms.py",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/reports/pesticide_diagnostic.html",
+		"/home/ben/repos/bip2/raw/pesticide_data_headers.csv",
+		"/home/ben/repos/bip2/bip/apps/erk/static/js/model_detail.js",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/beekeeper_delete.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/beekeeper_detail.html",
+		"/home/ben/repos/bip2/bip/apps/erk/tests/test_views.py",
+		"/home/ben/repos/bip2/bip/apps/erk/views.py",
+		"/home/ben/repos/bip2/bip/apps/erk/urls.py",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/sample_detail.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/sampleevent_create.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/sampleevent_detail.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/sample_create.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/beekeeper_create.html",
+		"/home/ben/repos/bip2/bip/apps/core/templates/core/_model_form.html",
+		"/home/ben/repos/bip2/raw/erk_pest_data.csv",
+		"/home/ben/repos/bip2/raw/pesticide_data_raw.csv",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/beekeeper_list.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/pesticide_settings.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/erk_base.html",
+		"/home/ben/repos/bip2/bip/apps/erk/tests/factories.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/templates/ushbs/reports/pesticide_diagnostic.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/pesticide_settings_form.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/beekeeper_form.html",
+		"/home/ben/repos/bip2/bip/apps/ushbs/views.py",
+		"/home/ben/repos/bip2/bip/apps/ushbs/templates/ushbs/pesticide_settings_form.html",
+		"/home/ben/repos/bip2/bip/apps/ushbs/tests/test_views.py",
+		"/home/ben/repos/bip2/bip/libs/tests/test_views.py",
+		"/home/ben/repos/bip2/bip/libs/views.py",
+		"/home/ben/repos/bip2/bip/libs/pesticide_models.py",
+		"/home/ben/repos/bip2/bip/settings/production.py",
+		"/home/ben/repos/bip2/requirements/production.txt",
+		"/home/ben/repos/bip2/bip/settings/development.py",
+		"/home/ben/repos/bip2/bip/apps/intake/forms.py",
+		"/home/ben/repos/bip2/bip/apps/intake/tests/test_views.py",
+		"/home/ben/repos/bip2/bip/apps/intake/views.py",
+		"/home/ben/repos/bip2/bip/apps/intake/tests/factories.py",
+		"/home/ben/repos/bip2/bip/apps/intake/models.py",
+		"/home/ben/repos/bip2/bip/apps/intake/templates/intake/data_sheet_uploads.html",
+		"/home/ben/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/ben/repos/bip2/bip/apps/intake/urls.py",
+		"/home/ben/repos/bip2/bip/urls.py",
+		"/home/ben/repos/bip2/bip/apps/intake/templates/intake/data_sheet_upload_form.html",
+		"/home/ben/repos/bip2/bip/apps/intake/templates/intake/data_sheet_upload_list.html",
+		"/home/ben/repos/bip2/bip/apps/reports/views.py",
+		"/home/ben/repos/bip2/bip/apps/geo/views.py",
+		"/home/ben/repos/bip2/bip/apps/intake/tests/test_models.py",
+		"/home/ben/repos/bip2/raw/new_pest_rows.csv",
+		"/home/ben/repos/bip2/bip/libs/utils.py",
+		"/home/ben/repos/bip2/bip/libs/tests/test_utils.py",
+		"/home/ben/.config/sublime-text-3/Packages/User/HTML (Django).sublime-settings",
+		"/home/ben/repos/bip2/bip/apps/geo/tests/test_sources.py",
+		"/home/ben/repos/bip2/bip/apps/geo/sources.py",
+		"/home/ben/repos/bip2/requirements/common.txt",
+		"/home/ben/repos/bip2/bip/libs/factories.py",
+		"/home/ben/repos/bip2/bip/apps/geo/tests/__init__.py",
+		"/home/ben/repos/bip2/bip/apps/intake/tests/__init__.py",
+		"/home/ben/repos/bip2/bip/apps/intake/__init__.py",
+		"/home/ben/Downloads/pesticide_data_raw.csv",
+		"/home/ben/repos/bip2/raw/pest_raw.csv",
+		"/home/ben/repos/bip2.wiki/The-Reports-App.md",
+		"/home/ben/repos/bip2/docs/conf.py",
+		"/home/ben/repos/bip2/requirements/development.txt",
+		"/home/ben/repos/bip2/docs/Makefile",
+		"/home/ben/repos/bip2/.gitignore",
+		"/home/ben/repos/bip2/docs/gen/conf.py",
+		"/home/ben/repos/bip2/docs/gen/Makefile",
+		"/home/ben/repos/bip2/make_docs.sh",
+		"/home/ben/repos/bip2/docs/index.rst",
+		"/home/ben/repos/bip2/make_docs.log",
+		"/home/ben/repos/bip2/docs/gen/index.rst",
+		"/home/ben/repos/bip2/docs/bip.apps.erk.sources.rst",
+		"/home/ben/repos/bip2/docs/bip.rst",
+		"/home/ben/repos/bip2/docs/bip.apps.ushbs.rst",
+		"/home/ben/repos/bip2/docs/bip.apps.reports.rst",
+		"/home/ben/repos/bip2/docs/bip.apps.erk.rst",
+		"/home/ben/repos/bip2/docs/bip.apps.core.rst",
+		"/home/ben/repos/bip2/bip/apps/ushbs/tests/factories.py",
+		"/home/ben/repos/bip2/bip/static/js/reportbrowser.js",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/source_detail.html",
+		"/home/ben/repos/bip2/bip/static/css/style.css",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/report_browser.html",
+		"/home/ben/repos/bip2/bip/apps/reports/tests/test_views.py",
+		"/home/ben/repos/bip2/bip/apps/reports/sources.py",
+		"/home/ben/repos/bip2/bip/apps/reports/tests/test_sources.py",
+		"/home/ben/repos/bip2/bip/libs/tests/test_hypermedia.py",
+		"/home/ben/repos/bip2/bip/libs/hypermedia.py",
+		"/home/ben/repos/bip2/bip/libs/renderers.py",
+		"/home/ben/repos/bip2/bip/libs/tests/test_renderers.py",
+		"/home/ben/repos/bip2/bip/libs/testmixins.py",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/reports/test.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/erk_report_browser.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/erk_source_detail.html",
+		"/home/ben/repos/bip2/bip/apps/erk/erk_source_detail.html",
+		"/home/ben/repos/bip2/bip/apps/ushbs/templates/ushbs/ushbs_source_list.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/erk_source_list.html",
+		"/home/ben/repos/bip2/bip/apps/erk/templates/erk/reports/erk_sources_list.html",
+		"/home/ben/repos/bip2/bip/apps/erk/admin.py",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/404.html",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/500.html",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/403.html",
+		"/home/ben/repos/bip2/bip/templates/500.html",
+		"/home/ben/repos/bip2/bip/templates/404.html",
+		"/home/ben/repos/bip2/bip/templates/403.html",
+		"/home/ben/repos/bip2/bip/apps/reports/templates/reports/source_list.html",
+		"/home/ben/repos/bip2/bip/apps/core/tests/test_models.py",
+		"/home/ben/repos/bip2/bip/apps/core/models.py",
+		"/home/ben/repos/bip2/bip/apps/reports/models.py",
+		"/home/ben/repos/bip2/bip/apps/reports/tests/test_models.py",
+		"/home/ben/repos/bip2/bip/apps/core/templates/core/base.html",
+		"/home/ben/repos/bip2/bip/apps/reports/tests/test_reports.py",
+		"/home/ben/repos/bip2/bip/apps/reports/tests/factories.py"
+	],
+	"find":
+	{
+		"height": 37.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"decoded_date",
+			",",
+			"beek_pk",
+			"beekeeper",
+			"object",
+			"model",
+			"reverse",
+			"00-Jan-00",
+			"not tested",
+			",,,,,,,,,,,",
+			",,,,,,,,,,",
+			"self",
+			"sources.",
+			".__name__",
+			".name",
+			"src",
+			"src_cls",
+			".\n",
+			"read_only",
+			"ImproperlyConfigured",
+			"minimap"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"\\n",
+			"event_pk",
+			"sample_event",
+			"model",
+			"setting",
+			"object",
+			"24-Jan-14",
+			"01-Jan-14",
+			"",
+			"cls",
+			"source",
+			"source_class"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 114.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "sparkdoor.sublime-project",
+	"replace":
+	{
+		"height": 66.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"~/repos/sparkdoor-client/sparkdoor.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 314.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

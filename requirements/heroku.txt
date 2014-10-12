@@ -1,0 +1,6 @@
+-r common.txt
+
+# Heroku specific requirements
+dj-database-url==0.3
+dj-static==0.0.6
+waitress==0.8.9

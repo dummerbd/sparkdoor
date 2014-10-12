@@ -51,6 +51,9 @@ staticfiles
 # Sphinx documentation
 docs/_build/
 
+# Sublime projects files
+*.sublime-*
+
 # PyBuilder
 target/
 

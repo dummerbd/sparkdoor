@@ -36,7 +36,11 @@ INTERNAL_IPS = ('127.0.0.1',)
 # we need to use an explicit setup
 DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
+SITE_ID = 2
+
 # show all messages
 MESSAGE_LEVEL = 10
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+WSGI_APPLICATION = 'sparkdoor.wsgi.development.application'

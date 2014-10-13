@@ -4,6 +4,19 @@ base.py - common settings module.
 import os
 
 
+def get_env_or_error(key, msg):
+    """
+    Attempt to get an environment variable, throw an exception with
+    `msg` if is not set.
+    """
+    val = os.environ.get(key, None)
+    from django.core.exceptions import ImproperlyConfigured
+    if val is None:
+        raise ImproperlyConfigured(
+            'Enviroment variable "{0}" not found: {1}'.format(key, msg))
+    return val
+
+
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..','..')
 
 INSTALLED_APPS = (
@@ -28,7 +41,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.facebook',
 )
 
-SECRET_KEY = os.environ['SPARK_SECRET_KEY']
+SECRET_KEY = get_env_or_error('SPARK_SECRET_KEY', 'should be set to a base64 key and not shared with anyone.')
 
 ALLOWED_HOSTS = []
 
@@ -150,6 +163,13 @@ LOGGING = {
 }
 
 # Celery settings
-BROKER_URL = os.environ['SPARK_CELERY_BROKER_URL']
+BROKER_URL = get_env_or_error('SPARK_CELERY_BROKER_URL', 'should be set to the url for a message broker for Celery')
+
+# Uncomment to enable result storage
+#CELERY_RESULT_BACKEND = get_env_or_error('SPARK_CELERY_RESULT_URL', 'should be set to the url for a result storage backend for Celery.')
+
+CELERY_TASK_SERIALIZER = 'pickle'
 
 CELERY_ACCEPT_CONTENT = ['pickle']
+
+CELERY_RESULT_SERIALIZER = 'pickle'

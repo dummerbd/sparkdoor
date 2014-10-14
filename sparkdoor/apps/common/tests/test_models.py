@@ -1,3 +1,3 @@
 """
-test_models.py - test cases for the `common` app's module module.
+test_models.py - test cases for the `common` app's models module.
 """

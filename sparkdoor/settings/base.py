@@ -27,10 +27,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'groundwork',
 
     # our apps:
     'sparkdoor.apps.common',
-    'groundwork',
+    'sparkdoor.apps.spark',
 
     # allauth
     'allauth',
@@ -173,3 +174,9 @@ CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_ACCEPT_CONTENT = ['pickle']
 
 CELERY_RESULT_SERIALIZER = 'pickle'
+
+# Spark cloud settings
+SPARK = {
+    'CLOUD_USERNAME': 'blah',
+    'CLOUD_PASSWORD': 'blah'
+}

@@ -177,6 +177,6 @@ CELERY_RESULT_SERIALIZER = 'pickle'
 
 # Spark cloud settings
 SPARK = {
-    'CLOUD_USERNAME': 'blah',
-    'CLOUD_PASSWORD': 'blah'
+    'CLOUD_USERNAME': get_env_or_error('SPARK_CLOUD_USERNAME', 'should be set to the login for a spark cloud service.'),
+    'CLOUD_PASSWORD': get_env_or_error('SPARK_CLOUD_PASSWORD', 'should be set to the password for SPARK_CLOUD_USERNAME.')
 }

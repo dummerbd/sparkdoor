@@ -10,6 +10,13 @@ class SparkCloud:
     """
     Interface to interacting with a Spark cloud web service.
     """
+    class Core:
+        """
+        Represents a Spark core device.
+        """
+        pass
+
+
     def __init__(self, access_token=None):
         """
         Constructer - instances a new web service using the path in
@@ -18,9 +25,12 @@ class SparkCloud:
         """
         self._settings = SparkSettings()
         self._service = Hammock(self._settings.API_URI)
-        self.access_token = access_token
+        if not access_token:
+            self.access_token = access_token
+        else:
+            self._login()
 
-    def login(self, username=None, password=None):
+    def _login(self, username=None, password=None):
         """
         Will attempt to get a new access_token from the cloud service
         using `SparkSettings.USERNAME` and `SparkSettings.PASSWORD` or
@@ -38,6 +48,10 @@ class SparkCloud:
             'password': password
         }
         response = self._service.oauth.token.POST(auth=auth, data=data)
-        if response.ok:
-            self.access_token = response.json().get('access_token')
-        return self.access_token
+        self.access_token = response.json().get('access_token') if response.ok else None
+
+    def cores(self):
+        """
+        Get the available Spark cores from this access token.
+        """
+        return []

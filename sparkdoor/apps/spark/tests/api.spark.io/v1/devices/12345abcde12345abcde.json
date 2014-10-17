@@ -1,0 +1,15 @@
+{
+    "id": "12345abcde12345abcde",
+    "name": "test_core",
+    "connected": true,
+    "variables": {
+        "test": 123
+    },
+    "functions": [
+        "digitalread",
+        "digitalwrite",
+        "analogread",
+        "analogwrite"
+    ],
+    "cc3000_patch_version": "1.29"
+}

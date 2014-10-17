@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 DEFAULTS = {
-    'CLOUD_API_URI': 'https://api.spark.io/v1'
+    'CLOUD_API_URI': 'https://api.spark.io'
 }
 
 

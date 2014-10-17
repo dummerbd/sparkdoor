@@ -4,15 +4,14 @@ mocks.py - reusable mock classes.
 import os
 import json
 
-from httmock import response, urlmatch
+from sparkdoor.libs.httmock import response, all_requests
 
 from ..settings import SparkSettings
 
 
 HEADERS = {
-    'content-type': 'application/json'
+    'content-type': 'application/json; charset=utf-8'
 }
-NETLOC = '^{0}$'.format(SparkSettings().API_URI)
 RESPONSE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'api.spark.io')
 GET = 'get'
 POST = 'post'
@@ -20,36 +19,53 @@ PUT = 'put'
 DELETE = 'delete'
 
 
-class Resource:
+def resource(path, request):
     """
-    An arbitrary REST resource that maps to the file system. Only
-    supports GET (file reads) for now.
+    A plain REST resource that maps to response content stored in JSON
+    files.
     """
-    class Resource404(Exception):
-        """
-        File could not be found, etc.
-        """
+    res = response(404, {}, HEADERS, None, 5, request)
+    path = path if path[0] != '/' else path[1:]
+    file_path = os.path.join(RESPONSE_DIR, '{0}.json'.format(path))
+    try:
+        with open(file_path, 'r') as f:
+            content = json.load(f)
+        res = response(200, content, HEADERS, None, 5, request)
+    except:
         pass
-
-    def __init__(self, path):
-        """
-        Map a resource uri path to a file.
-        """
-        self.path = os.path.join(RESPONSE_DIR, '{0}.json'.format(path))
-
-    def get(self):
-        """
-        Respond to a GET request.
-        """
-        try:
-            with open(self.path, 'r') as f:
-                return json.load(f)
-        except:
-            raise Resource.Resource404
+    return res
 
 
-@urlmatch(netloc=NETLOC)
-def spark_cloud_mock(path, request):
+def oauth_request_is_valid(request):
+    """
+    Check that a request is valid and should be granted a token.
+    """
+    r = request.original
+    ss = SparkSettings()
+    return (r.method.lower() == POST and r.auth == ('spark', 'spark') and
+        r.data['username'] == ss.USERNAME and r.data['password'] == ss.PASSWORD and
+        r.data['grant_type'] == 'password')
+
+
+def oauth_token(path, request):
+    """
+    Respond to the `/oauth/token` resource, which grants access tokens
+    from valid login credentials. Any malformed requests, including
+    invalid credentials, returns a 400 response.
+    """
+    res = response(400, {}, HEADERS, None, 5, request)
+    if oauth_request_is_valid(request):
+        res = resource(path, request)
+    return res
+
+
+HANDLERS = {
+    '/oauth/token': oauth_token
+}
+
+
+@all_requests
+def spark_cloud_mock(url_split, request):
     """
     Use with `httmock.with_httmock` decorator or `httmock.HttMock`
     context manager.
@@ -63,4 +79,5 @@ def spark_cloud_mock(path, request):
     Note: this mock will respect the `SPARK.CLOUD_API_URI` setting in
     request paths.
     """
-    pass
+    path = url_split.path
+    return HANDLERS.get(path, resource)(path, request)

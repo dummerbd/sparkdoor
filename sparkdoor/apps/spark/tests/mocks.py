@@ -13,26 +13,30 @@ HEADERS = {
     'content-type': 'application/json; charset=utf-8'
 }
 RESPONSE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'api.spark.io')
+ACCESS_TOKEN = '12345abcde'
 GET = 'get'
 POST = 'post'
 PUT = 'put'
 DELETE = 'delete'
 
 
-def resource(path, request):
+def resource(path, request, check_token=True):
     """
     A plain REST resource that maps to response content stored in JSON
     files.
     """
     res = response(404, {}, HEADERS, None, 5, request)
-    path = path if path[0] != '/' else path[1:]
-    file_path = os.path.join(RESPONSE_DIR, '{0}.json'.format(path))
-    try:
-        with open(file_path, 'r') as f:
-            content = json.load(f)
-        res = response(200, content, HEADERS, None, 5, request)
-    except:
-        pass
+    if check_token and request.original.params.get('access_token') != ACCESS_TOKEN:
+        res = response(400, {}, HEADERS, None, 5, request)
+    else:
+        path = path if path[0] != '/' else path[1:]
+        file_path = os.path.join(RESPONSE_DIR, '{0}.json'.format(path))
+        try:
+            with open(file_path, 'rb') as f:
+                content = f.read()
+            res = response(200, content, HEADERS, None, 5, request)
+        except:
+            pass
     return res
 
 
@@ -55,7 +59,10 @@ def oauth_token(path, request):
     """
     res = response(400, {}, HEADERS, None, 5, request)
     if oauth_request_is_valid(request):
-        res = resource(path, request)
+        res = resource(path, request, False)
+        c = json.loads(res._content.decode('utf-8'))
+        c['access_token'] = ACCESS_TOKEN
+        res._content = bytes(json.dumps(c), 'utf-8')
     return res
 
 

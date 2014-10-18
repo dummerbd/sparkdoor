@@ -71,6 +71,18 @@ class CloudCredentialsTestCase(TestCase):
         self.assertEqual(token, None)
         exp.delete()
 
+    def test_renew_token(self):
+        """
+        Test that `renew_token` makes a new record and returns a the new
+        token.
+        """
+        self.assertEqual(CloudCredentials.objects.count(), 0)
+        with HTTMock(spark_cloud_mock):
+            token = CloudCredentials.objects.renew_token()
+        self.assertEqual(token, ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects.count(), 1)
+        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+
 
 @override_settings(SPARK=spark_test_settings)
 class DeviceTestCase(TestCase):

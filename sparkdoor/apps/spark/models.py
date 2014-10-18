@@ -5,7 +5,7 @@ from django.db import models
 from django.conf import settings
 
 
-class SparkCloudCredentials(models.Model):
+class CloudCredentials(models.Model):
     """
     Stores credentials to access a Spark cloud service.
     """
@@ -13,7 +13,7 @@ class SparkCloudCredentials(models.Model):
     expires_at = models.DateTimeField()
 
 
-class SparkDevice(models.Model):
+class Device(models.Model):
     """
     Stores information about a Spark device.
     """

@@ -15,20 +15,16 @@ class CloudCredentialsManager(models.Manager):
     def access_token(self):
         """
         Get the most recent valid `access_token`, if one isn't found
-        then a new one is granted.
+        then None is returned.
         """
-        now = timezone.now()
         try:
-            token = self.get_queryset().filter(
-                expires_at__gt=now
+            return self.get_queryset().filter(
+                expires_at__gt=timezone.now()
             ).latest(
                 'expires_at'
             ).access_token
         except:
-            cloud = SparkCloud()
-            token = cloud.access_token
-            CloudCredentials(access_token=token, expires_at=cloud.expires_at)
-        return token
+            return None
 
 
 class CloudCredentials(models.Model):

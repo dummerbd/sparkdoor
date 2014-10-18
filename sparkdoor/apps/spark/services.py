@@ -25,6 +25,11 @@ class SparkCloud:
             Copy `kwargs` onto instance.
             """
             self.cloud = cloud
+            self.name = None
+            self.id = None
+            self.connected = None
+            self.last_app = None
+            self.last_heard = None
             [setattr(self, k, v) for k, v in kwargs.items()]
 
         @property
@@ -56,37 +61,28 @@ class SparkCloud:
         self._settings = SparkSettings()
         self._service = Hammock(self._settings.API_URI)
         self.access_token = access_token
-        self.expires_at = None
-        if self.access_token is None:
-            self._login()
 
-    def _login(self, username=None, password=None):
+    def renew_token(self, username=None, password=None):
         """
         Will attempt to get a new access_token from the cloud service
         using `SparkSettings.USERNAME` and `SparkSettings.PASSWORD` or
         the passed in `username` and `password`.
 
-        An invalid login will return None, otherwise the access token is
-        returned, which also sets the `access_token` attribute.
+        An invalid login will return the tuple (None, None) otherwise a
+        tuple (access_token, expires_by) is returned and the
+        `access_token` attribute is set.
         """
         username = username or self._settings.USERNAME
         password = password or self._settings.PASSWORD
         self.access_token = None
-        self.expires_at = None
-        auth = ('spark', 'spark')
-        data = {
-            'grant_type': 'password',
-            'username': username,
-            'password': password
-        }
-        response = self._service.oauth.token.POST(auth=auth, data=data)
+        expires_at = None
+        data = {'grant_type': 'password', 'username': username, 'password': password}
+        response = self._service.oauth.token.POST(auth=('spark', 'spark'), data=data)
         if response.ok:
             d = response.json()
-            try:    
-                self.access_token = d['access_token']
-                self.expires_at = timezone.now() + timedelta(seconds=int(d['expires_in']))
-            except:
-                pass
+            self.access_token = d['access_token']
+            expires_at = timezone.now() + timedelta(seconds=int(d['expires_in']))
+        return (self.access_token, expires_at)
 
     @property
     def devices(self):

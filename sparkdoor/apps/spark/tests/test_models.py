@@ -52,23 +52,24 @@ class CloudCredentialsTestCase(TestCase):
 
     def test_access_token_empty(self):
         """
-        Test that `access_token` requests a new access token from
-        `SparkCloud` if there isn't any saved credentials.
+        Test that `access_token` returns None if there isn't any saved
+        credentials.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
             token = CloudCredentials.objects.access_token()
-        self.assertEqual(token, ACCESS_TOKEN)
+        self.assertEqual(token, None)
 
     def test_access_token_all_expired(self):
         """
-        Test that `access_token` requests a new access token from
-        `SparkCloud` if all the stored tokens are expired.
+        Test that `access_token` returns None if all the stored tokens
+        are expired.
         """
         exp = self.factory.create(access_token='expired', expires_at=self.expired_dt)
         with HTTMock(spark_cloud_mock):
             token = CloudCredentials.objects.access_token()
-        self.assertEqual(token, ACCESS_TOKEN)
+        self.assertEqual(token, None)
+        exp.delete()
 
 
 @override_settings(SPARK=spark_test_settings)

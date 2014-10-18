@@ -1,6 +1,10 @@
 """
 services.py - module for interacting with a Spark cloud service.
 """
+from datetime import timedelta
+
+from django.utils import timezone
+
 from hammock import Hammock
 
 from .settings import SparkSettings
@@ -51,9 +55,9 @@ class SparkCloud:
         """
         self._settings = SparkSettings()
         self._service = Hammock(self._settings.API_URI)
-        if access_token is not None:
-            self.access_token = access_token
-        else:
+        self.access_token = access_token
+        self.expires_at = None
+        if self.access_token is None:
             self._login()
 
     def _login(self, username=None, password=None):
@@ -67,6 +71,8 @@ class SparkCloud:
         """
         username = username or self._settings.USERNAME
         password = password or self._settings.PASSWORD
+        self.access_token = None
+        self.expires_at = None
         auth = ('spark', 'spark')
         data = {
             'grant_type': 'password',
@@ -74,7 +80,13 @@ class SparkCloud:
             'password': password
         }
         response = self._service.oauth.token.POST(auth=auth, data=data)
-        self.access_token = response.json().get('access_token') if response.ok else None
+        if response.ok:
+            d = response.json()
+            try:    
+                self.access_token = d['access_token']
+                self.expires_at = timezone.now() + timedelta(seconds=int(d['expires_in']))
+            except:
+                pass
 
     @property
     def devices(self):

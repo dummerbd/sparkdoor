@@ -16,7 +16,8 @@ from ..models import CloudCredentials, Device
 spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
-    'CLOUD_API_URI': 'https://api.test.com'
+    'CLOUD_API_URI': 'https://api.test.com',
+    'CLOUD_RENEW_TOKEN_WINDOW': 60*60 # 1 hour
 }
 
 
@@ -30,12 +31,26 @@ class CloudCredentialsTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         """
-        Add some test data.
+        Add some test dates.
         """
         now = timezone.now()
         cls.expired_dt = now + timedelta(days=-10)
         cls.current_dt = now + timedelta(days=90)
         cls.old_dt = now + timedelta(days=10)
+
+    def test_is_valid(self):
+        """
+        Test that `is_valid` uses the `CLOUD_RENEW_TOKEN_WINDOW` 
+        setting.
+        """
+        now = timezone.now()
+        window = spark_test_settings['CLOUD_RENEW_TOKEN_WINDOW']
+        cur = self.factory.build(access_token='good',
+            expires_at=now + timedelta(seconds=window*2))
+        exp = self.factory.build(access_token='expired',
+            expires_at=now + timedelta(seconds=window/2))
+        self.assertTrue(cur.is_valid())
+        self.assertFalse(exp.is_valid())
 
     def test_access_token(self):
         """

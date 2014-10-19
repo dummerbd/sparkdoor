@@ -6,7 +6,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 
 DEFAULTS = {
-    'CLOUD_API_URI': 'https://api.spark.io'
+    'CLOUD_API_URI': 'https://api.spark.io',
+    'CLOUD_RENEW_TOKEN_WINDOW': 60*60*24 # 24 hours
 }
 
 
@@ -24,6 +25,8 @@ class SparkSettings:
             raise ImproperlyConfigured('The Spark app requires a configuration object called SPARK in your settings.')
 
         self.API_URI = settings.SPARK.get('CLOUD_API_URI', DEFAULTS['CLOUD_API_URI'])
+        self.RENEW_TOKEN_WINDOW = settings.SPARK.get('CLOUD_RENEW_TOKEN_WINDOW',
+            DEFAULTS['CLOUD_RENEW_TOKEN_WINDOW'])
 
         self.USERNAME = settings.SPARK.get('CLOUD_USERNAME', None)
         if self.USERNAME is None:

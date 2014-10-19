@@ -1,11 +1,14 @@
 """
 models.py - `spark` app models module.
 """
+from datetime import timedelta
+
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
 from .services import SparkCloud
+from .settings import SparkSettings
 
 
 class CloudCredentialsManager(models.Manager):
@@ -17,14 +20,14 @@ class CloudCredentialsManager(models.Manager):
         Get the most recent valid `access_token`, if one isn't found
         then None is returned.
         """
+        cred = None
         try:
-            return self.get_queryset().filter(
-                expires_at__gt=timezone.now()
-            ).latest(
-                'expires_at'
-            ).access_token
-        except:
-            return None
+            cred = self.get_queryset().latest('expires_at')
+        except CloudCredentials.DoesNotExist:
+            pass
+        if cred and cred.is_valid():
+            return cred.access_token
+        return None
 
     def renew_token(self):
         """
@@ -42,6 +45,14 @@ class CloudCredentials(models.Model):
     """
     access_token = models.CharField(max_length=250, blank=False)
     expires_at = models.DateTimeField()
+
+    def is_valid(self):
+        """
+        Determine if these credentials are still within the exipiration
+        date.
+        """
+        window = SparkSettings().RENEW_TOKEN_WINDOW
+        return self.expires_at > (timezone.now() + timedelta(seconds=window))
 
     objects = CloudCredentialsManager()
 

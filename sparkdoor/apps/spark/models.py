@@ -34,7 +34,8 @@ class CloudCredentialsManager(models.Manager):
         Get a new token from the cloud service, save it in a new record,
         and return it.
         """
-        token, expires_at = SparkCloud().renew_token()
+        s = SparkSettings()
+        token, expires_at = SparkCloud(s.API_URI).renew_token(s.USERNAME, s.PASSWORD)
         CloudCredentials(access_token=token, expires_at=expires_at).save()
         return token
 

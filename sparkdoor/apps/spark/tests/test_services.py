@@ -23,23 +23,33 @@ class SparkCloudTestCase(SimpleTestCase):
     """
     Test case for `services.SparkCloud`.
     """
+    @classmethod
+    def setUpClass(cls):
+        """
+        Add test settings shortcuts.
+        """
+        cls.USERNAME = spark_test_settings['CLOUD_USERNAME']
+        cls.PASSWORD = spark_test_settings['CLOUD_PASSWORD']
+        cls.API_URI = spark_test_settings['CLOUD_API_URI']
+
     def test_init(self):
         """
-        Test that `__int___` sets the `access_token` attribute.
+        Test that `__int___` sets the `access_token` and `api_uri`
+        attributes.
         """
+        token = 'a token'
         with HTTMock(spark_cloud_mock):
-            cloud = SparkCloud('a token')
-        self.assertEqual(cloud.access_token, 'a token')
+            cloud = SparkCloud(self.API_URI, token)
+        self.assertEqual(cloud.access_token, token)
 
     def test_renew_token(self):
         """
-        Test that `renew_token` using the credentials in `SparkSettings`
-        to generate a new token that is returned in a tuple with the
-        expire date.
+        Test that `renew_token` requests a new token using the provided
+        `username` and `password`.
         """
         with HTTMock(spark_cloud_mock):
-            cloud = SparkCloud()
-            token, expires = cloud.renew_token()
+            cloud = SparkCloud(self.API_URI)
+            token, expires = cloud.renew_token(self.USERNAME, self.PASSWORD)
         self.assertEqual(token, cloud.access_token)
         self.assertEqual(token, ACCESS_TOKEN)
         self.assertIsInstance(expires, datetime)
@@ -50,7 +60,7 @@ class SparkCloudTestCase(SimpleTestCase):
         credentials.
         """
         with HTTMock(spark_cloud_mock):
-            cloud = SparkCloud()
+            cloud = SparkCloud(self.API_URI)
             token, expires = cloud.renew_token('not_a_valid_user', 'password')
         self.assertIsNone(cloud.access_token)
         self.assertIsNone(token)
@@ -62,7 +72,7 @@ class SparkCloudTestCase(SimpleTestCase):
         instances.
         """
         with HTTMock(spark_cloud_mock):
-            cloud = SparkCloud(ACCESS_TOKEN)
+            cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
             devices = cloud.devices
         self.assertIsInstance(devices, list)
         self.assertTrue(len(devices) > 0)
@@ -76,7 +86,7 @@ class SparkCloudTestCase(SimpleTestCase):
         access token is used.
         """
         with HTTMock(spark_cloud_mock):
-            devices = SparkCloud('invalid_token').devices
+            devices = SparkCloud(self.API_URI, 'invalid_token').devices
         self.assertEqual(devices, [])
 
     def test_device_functions(self):
@@ -84,7 +94,7 @@ class SparkCloudTestCase(SimpleTestCase):
         Test that a `Device` has a `functions` list.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
             self.assertIsNotNone(device.functions)
 
     def test_device_variables(self):
@@ -92,5 +102,5 @@ class SparkCloudTestCase(SimpleTestCase):
         Test that a `Device` has a `variables` list.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
             self.assertIsNotNone(device.functions)

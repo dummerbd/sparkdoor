@@ -34,6 +34,13 @@
     color: #FFFFFF;
 }
 
-.login-box {
-    box-shadow: 10px 10px 5px #88888;
+#login_box {
+    box-shadow: 2px 2px 10px #888888;
+}
+
+.login_heading {
+    text-align: center;
+}
+#buttons {
+    text-align: center;
 }

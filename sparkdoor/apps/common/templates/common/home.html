@@ -10,9 +10,12 @@
 <div id="login_box">
     <h3 class="login_heading">Welcome to Sparkdoor, where you can login or logout</h3>
     <div id="buttons">
-      <button class="login_button" data-reveal-id="myModal" data-reveal-ajax="{% url 'account_login' %}">Login</button>
       {% if user.is_authenticated %}
         <button class="logout_button" data-reveal-id="myModal" data-reveal-ajax="{% url 'account_logout' %}">Logout</button>
+      {% else %}
+      	<button class="login_button" data-reveal-id="myModal" data-reveal-ajax="{% url 'account_login' %}">Login</button>
+      	<button class="signup_button" data-reveal-id="myModal" data-reveal-ajax="
+      	{% url 'account_signup' %}">Signup</button>
       {% endif %}
     </div>
   </div>

@@ -73,5 +73,9 @@ class Device(models.Model):
     """
     Stores information about a Spark device.
     """
-    device_id = models.IntegerField(null=False)
+    device_id = models.CharField(max_length=250, blank=False)
+    name = models.CharField(max_length=250, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False)
+
+    class Meta:
+        unique_together = ('name', 'user')

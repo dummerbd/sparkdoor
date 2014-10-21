@@ -38,9 +38,9 @@ class CloudCredentialsTestCase(TestCase):
         cls.current_dt = now + timedelta(days=90)
         cls.old_dt = now + timedelta(days=10)
 
-    def test_is_valid(self):
+    def test_expires_soon(self):
         """
-        Test that `is_valid` uses the `CLOUD_RENEW_TOKEN_WINDOW` 
+        Test that `expires_soon` uses the `CLOUD_RENEW_TOKEN_WINDOW` 
         setting.
         """
         now = timezone.now()
@@ -49,8 +49,8 @@ class CloudCredentialsTestCase(TestCase):
             expires_at=now + timedelta(seconds=window*2))
         exp = self.factory.build(access_token='expired',
             expires_at=now + timedelta(seconds=window/2))
-        self.assertTrue(cur.is_valid())
-        self.assertFalse(exp.is_valid())
+        self.assertFalse(cur.expires_soon())
+        self.assertTrue(exp.expires_soon())
 
     def test_access_token(self):
         """
@@ -95,6 +95,18 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             token = CloudCredentials.objects.renew_token()
         self.assertEqual(token, ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects.count(), 1)
+        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+
+    def test_renew_token_not_needed(self):
+        """
+        Test that `renew_token` only renews the token if needed.
+        """
+        token = 'good_token'
+        cur = self.factory.create(access_token=token, expires_at=self.current_dt)
+        with HTTMock(spark_cloud_mock):
+            renewed_token = CloudCredentials.objects.renew_token()
+        self.assertEqual(renewed_token, token)
         self.assertEqual(CloudCredentials.objects.count(), 1)
         self.assertEqual(CloudCredentials.objects.first().access_token, token)
 

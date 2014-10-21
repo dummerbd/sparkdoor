@@ -20,14 +20,10 @@ class CloudCredentialsManager(models.Manager):
         Get the most recent valid `access_token`, if one isn't found
         then None is returned.
         """
-        cred = None
         try:
-            cred = self.get_queryset().latest('expires_at')
+            return self._latest().access_token
         except CloudCredentials.DoesNotExist:
-            pass
-        if cred and cred.is_valid():
-            return cred.access_token
-        return None
+            return None
 
     def renew_token(self):
         """
@@ -35,9 +31,24 @@ class CloudCredentialsManager(models.Manager):
         and return it.
         """
         s = SparkSettings()
-        token, expires_at = SparkCloud(s.API_URI).renew_token(s.USERNAME, s.PASSWORD)
-        CloudCredentials(access_token=token, expires_at=expires_at).save()
+        renew = True
+        try:
+            cred = self._latest()
+            token = cred.access_token
+            renew = cred.expires_soon()
+        except:
+            pass
+        if renew:
+            token, expires_at = SparkCloud(s.API_URI).renew_token(s.USERNAME, s.PASSWORD)
+            CloudCredentials(access_token=token, expires_at=expires_at).save()
         return token
+
+    def _latest(self):
+        return self.get_queryset().filter(
+                expires_at__gt=timezone.now()
+            ).latest(
+                'expires_at'
+            )
 
 
 class CloudCredentials(models.Model):
@@ -47,13 +58,13 @@ class CloudCredentials(models.Model):
     access_token = models.CharField(max_length=250, blank=False)
     expires_at = models.DateTimeField()
 
-    def is_valid(self):
+    def expires_soon(self):
         """
         Determine if these credentials are still within the exipiration
         date.
         """
         window = SparkSettings().RENEW_TOKEN_WINDOW
-        return self.expires_at > (timezone.now() + timedelta(seconds=window))
+        return self.expires_at <= (timezone.now() + timedelta(seconds=window))
 
     objects = CloudCredentialsManager()
 

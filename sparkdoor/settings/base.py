@@ -155,7 +155,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propogate': False,
         },
-        'bip': {
+        'sparkdoor': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propogate': False,
+        },
+        'celery': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propogate': False,
@@ -167,13 +172,23 @@ LOGGING = {
 BROKER_URL = get_env_or_error('SPARK_CELERY_BROKER_URL', 'should be set to the url for a message broker for Celery')
 
 # Uncomment to enable result storage
-#CELERY_RESULT_BACKEND = get_env_or_error('SPARK_CELERY_RESULT_URL', 'should be set to the url for a result storage backend for Celery.')
+CELERY_RESULT_BACKEND = get_env_or_error('SPARK_CELERY_RESULT_URL', 'should be set to the url for a result storage backend for Celery.')
 
-CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_IGNORE_RESULT = False
 
-CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_TASK_SERIALIZER = 'json'
 
-CELERY_RESULT_SERIALIZER = 'pickle'
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERY_RESULT_SERIALIZER = 'json'
+
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+    'sparkcloud_token_refresh': {
+        'task': 'sparkdoor.apps.spark.tasks.refresh_access_token',
+        'schedule': timedelta(seconds=15)
+    }
+}
 
 # Spark cloud settings
 SPARK = {

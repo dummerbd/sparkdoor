@@ -62,3 +62,6 @@ target/
 
 # Redis dump
 dump.rdb
+
+# Celery Dump
+celerybeat-schedule

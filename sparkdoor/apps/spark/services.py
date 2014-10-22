@@ -1,11 +1,14 @@
 """
 services.py - module for interacting with a Spark cloud service.
 """
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.utils import timezone
 
 from hammock import Hammock
+
+
+CLOUD_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 
 class SparkCloud:
@@ -76,6 +79,25 @@ class SparkCloud:
             self.access_token = d['access_token']
             expires_at = timezone.now() + timedelta(seconds=int(d['expires_in']))
         return (self.access_token, expires_at)
+
+    def discover_tokens(self, username, password):
+        """
+        Will attempt to find any tokens already active on this account.
+        If any are found, the most recent token will be returned in a
+        tuple (access_token, expires_by) and the `access_token`
+        attribute is set, otherwise (None, None) is returned.
+        """
+        token, expires_at = None, None
+        response = self._service.v1.access_tokens.GET(auth=(username, password))
+        if response.ok:
+            for entry in response.json():
+                entry['expires_at'] = datetime.strptime(entry['expires_at'],
+                    CLOUD_DATETIME_FORMAT)
+                if expires_at is None or entry['expires_at'] > expires_at:
+                    expires_at = entry['expires_at']
+                    token = entry['access_token']
+                    self.access_token = token
+        return (token, expires_at)
 
     @property
     def devices(self):

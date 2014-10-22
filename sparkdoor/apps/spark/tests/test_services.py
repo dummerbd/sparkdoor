@@ -66,6 +66,29 @@ class SparkCloudTestCase(SimpleTestCase):
         self.assertIsNone(token)
         self.assertIsNone(expires)
 
+    def test_discover_tokens(self):
+        """
+        Test that `discover_tokens` returns the most recent token in a
+        tuple (token, expires_by).
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI)
+            token, expires = cloud.discover_tokens(self.USERNAME, self.PASSWORD)
+        self.assertEqual(token, cloud.access_token)
+        self.assertEqual(token, ACCESS_TOKEN)
+        self.assertIsInstance(expires, datetime)
+
+    def test_discover_tokens_with_invalid_credentials(self):
+        """
+        Test that `discover_tokens` returns (None, None) with invalid
+        credentials.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI)
+            token, expires = cloud.discover_tokens('not_a_valid_user', 'password')
+        self.assertIsNone(token)
+        self.assertIsNone(expires)
+
     def test_devices(self):
         """
         Test that `devices` returns a list of available `Device` 

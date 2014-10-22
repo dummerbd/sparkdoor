@@ -3,10 +3,12 @@ mocks.py - reusable mock classes.
 """
 import os
 import json
+from datetime import timedelta, datetime
 
 from sparkdoor.libs.httmock import response, all_requests
 
 from ..settings import SparkSettings
+from ..services import CLOUD_DATETIME_FORMAT
 
 
 HEADERS = {
@@ -66,8 +68,38 @@ def oauth_token(path, request):
     return res
 
 
+def valid_credentials(request):
+    """
+    Check the credentials.
+    """
+    username, password = request.original.auth
+    s = SparkSettings()
+    return s.USERNAME == username and s.PASSWORD == password
+
+
+def v1_access_tokens(path, request):
+    """
+    Respond to the `/v1/access_tokens` resource, which lists active
+    tokens on GET.
+    """
+    res = response(400, {}, HEADERS, None, 5, request)
+    if request.method.lower() == GET and valid_credentials(request):
+        res = resource(path, request, False)
+        c = json.loads(res._content.decode('utf-8'))
+        # the first token is the most recent valid entry
+        c[0]['access_token'] = ACCESS_TOKEN
+        c[0]['expires_at'] = (datetime.now() + timedelta(days=90)).strftime(
+            CLOUD_DATETIME_FORMAT)
+        # the second token is old
+        c[1]['expires_at'] = (datetime.now() + timedelta(days=1)).strftime(
+            CLOUD_DATETIME_FORMAT)
+        res._content = bytes(json.dumps(c), 'utf-8')
+    return res
+
+
 HANDLERS = {
-    '/oauth/token': oauth_token
+    '/oauth/token': oauth_token,
+    '/v1/access_tokens': v1_access_tokens
 }
 
 
@@ -87,4 +119,7 @@ def spark_cloud_mock(url_split, request):
     request paths.
     """
     path = url_split.path
-    return HANDLERS.get(path, resource)(path, request)
+    for p, handler in HANDLERS.items():
+        if path.startswith(p):
+            return handler(path, request)
+    return resource(path, request)

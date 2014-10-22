@@ -37,17 +37,16 @@ class RefreshAccessTokenTestCase(TestCase):
         cls.expired_dt = now + timedelta(days=-10)
         cls.current_dt = now + timedelta(days=90)
 
-    def test_returns_good_token(self):
+    def test_good_token(self):
         """
-        If there is a good token (not expired) then don't do anything,
-        just return that token.
+        If there is a good token (not expired) then don't do anything.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         cred = self.factory.create(access_token='good_token', expires_at=self.current_dt)
         with HTTMock(spark_cloud_mock):
-            token = refresh_access_token()
+            refresh_access_token()
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(token, 'good_token')
+        self.assertEqual(CloudCredentials.objects.access_token(), 'good_token')
         cred.delete()
 
     def test_renews_token(self):
@@ -55,9 +54,9 @@ class RefreshAccessTokenTestCase(TestCase):
         If there isn't any good tokens then renew one.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
-        cred = self.factory.create(access_token='old_token', expires_at=self.expired_dt)
+        old = self.factory.create(access_token='old_token', expires_at=self.expired_dt)
         with HTTMock(spark_cloud_mock):
-            token = refresh_access_token()
+            refresh_access_token()
         self.assertEqual(CloudCredentials.objects.count(), 2)
-        self.assertEqual(token, ACCESS_TOKEN)
-        cred.delete()
+        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        CloudCredentials.objects.all().delete()

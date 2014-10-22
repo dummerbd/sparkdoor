@@ -10,9 +10,12 @@ from celery.utils.log import get_task_logger
 
 from .models import CloudCredentials
 
+
 logger = get_task_logger(__name__)
 
-LOCK_EXPIRE = 60 * 3 # 3 minutex
+
+LOCK_EXPIRE = 60 * 3 # 3 minutes
+
 
 @contextmanager
 def task_lock(key):
@@ -42,18 +45,11 @@ def refresh_access_token():
     and request a new one when needed.
     """
     key = '{0}.refresh_access_token'.format(__name__)
-    token = None
     logger.debug('Attempting to acquire lock...')
     with task_lock(key) as locked:
         if locked:
-            logger.debug('Lock acquired - getting token...')
-            token = CloudCredentials.objects.renew_token()
+            logger.debug('Lock acquired - discovering existing tokens...')
+            CloudCredentials.objects.renew_token()
             logger.debug('Token refreshed.')
         else:
             logger.debug('Lock not acquired.')
-            token = CloudCredentials.objects.access_token()
-    return token
-
-@shared_task
-def test(param):
-    return 'The test task executed with argument "%s" ' % param

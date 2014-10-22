@@ -43,6 +43,18 @@ class CloudCredentialsManager(models.Manager):
             CloudCredentials(access_token=token, expires_at=expires_at).save()
         return token
 
+    def discover_tokens(self):
+        """
+        Attempt to retrieve existing tokens from the cloud service, save
+        the most recent in a new record if needed, and return it.
+        """
+        s = SparkSettings()
+        token, expires_at = SparkCloud(s.API_URI).discover_tokens(s.USERNAME, s.PASSWORD)
+        if (token is not None and expires_at is not None and
+                not self.filter(access_token=token).exists()):
+            CloudCredentials(access_token=token, expires_at=expires_at).save()
+        return token
+
     def _latest(self):
         return self.get_queryset().filter(
                 expires_at__gt=timezone.now()
@@ -55,7 +67,7 @@ class CloudCredentials(models.Model):
     """
     Stores credentials to access a Spark cloud service.
     """
-    access_token = models.CharField(max_length=250, blank=False)
+    access_token = models.CharField(max_length=250, blank=False, unique=True)
     expires_at = models.DateTimeField()
 
     def expires_soon(self):

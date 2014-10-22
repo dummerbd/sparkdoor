@@ -88,7 +88,7 @@ class CloudCredentialsTestCase(TestCase):
 
     def test_renew_token(self):
         """
-        Test that `renew_token` makes a new record and returns a the new
+        Test that `renew_token` makes a new record and returns the new
         token.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
@@ -97,6 +97,7 @@ class CloudCredentialsTestCase(TestCase):
         self.assertEqual(token, ACCESS_TOKEN)
         self.assertEqual(CloudCredentials.objects.count(), 1)
         self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        CloudCredentials.objects.all().delete()
 
     def test_renew_token_not_needed(self):
         """
@@ -107,6 +108,32 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             renewed_token = CloudCredentials.objects.renew_token()
         self.assertEqual(renewed_token, token)
+        self.assertEqual(CloudCredentials.objects.count(), 1)
+        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        CloudCredentials.objects.all().delete()
+
+    def test_discover_tokens(self):
+        """
+        Test that `discover_tokens` finds new tokens, saves the most
+        recent, and returns the token.
+        """
+        self.assertEqual(CloudCredentials.objects.count(), 0)
+        with HTTMock(spark_cloud_mock):
+            token = CloudCredentials.objects.discover_tokens()
+        self.assertEqual(token, ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects.count(), 1)
+        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+
+    def test_discover_tokens_exiting_token(self):
+        """
+        Test that `discover_tokens` does not create a new record if the
+        token it finds is already recorded.
+        """
+        self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
+        self.assertEqual(CloudCredentials.objects.count(), 1)
+        with HTTMock(spark_cloud_mock):
+            token = CloudCredentials.objects.discover_tokens()
+        self.assertEqual(token, ACCESS_TOKEN)
         self.assertEqual(CloudCredentials.objects.count(), 1)
         self.assertEqual(CloudCredentials.objects.first().access_token, token)
 

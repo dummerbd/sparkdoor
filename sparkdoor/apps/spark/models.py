@@ -20,47 +20,55 @@ class CloudCredentialsManager(models.Manager):
         Get the most recent valid `access_token`, if one isn't found
         then None is returned.
         """
-        try:
-            return self._latest().access_token
-        except CloudCredentials.DoesNotExist:
+        latest = self._latest()
+        if latest is None:
             return None
+        return latest.access_token
 
-    def renew_token(self):
+    def refresh_token(self):
         """
-        Get a new token from the cloud service, save it in a new record,
-        and return it.
+        Check if the access token will expire soon, if so then attempt
+        to find any existed tokens on the cloud account. If no existing
+        tokens are found then a new one will be requested.
+        """
+        latest = self._latest()
+        if latest is None or latest.expires_soon():
+            cloud = SparkCloud(SparkSettings().API_URI)
+            self._discover_tokens(cloud)
+            if self.access_token() is None:
+                self._renew_token(cloud)
+
+    def _renew_token(self, cloud):
+        """
+        Get a new token from the cloud service and record it.
         """
         s = SparkSettings()
-        renew = True
-        try:
-            cred = self._latest()
-            token = cred.access_token
-            renew = cred.expires_soon()
-        except:
-            pass
-        if renew:
-            token, expires_at = SparkCloud(s.API_URI).renew_token(s.USERNAME, s.PASSWORD)
-            CloudCredentials(access_token=token, expires_at=expires_at).save()
-        return token
+        token, expires_at = cloud.renew_token(s.USERNAME, s.PASSWORD)
+        CloudCredentials(access_token=token, expires_at=expires_at).save()
 
-    def discover_tokens(self):
+    def _discover_tokens(self, cloud):
         """
-        Attempt to retrieve existing tokens from the cloud service, save
-        the most recent in a new record if needed, and return it.
+        Get existing tokens from the cloud service and save the most
+        recent.
         """
         s = SparkSettings()
-        token, expires_at = SparkCloud(s.API_URI).discover_tokens(s.USERNAME, s.PASSWORD)
+        token, expires_at = cloud.discover_tokens(s.USERNAME, s.PASSWORD)
         if (token is not None and expires_at is not None and
                 not self.filter(access_token=token).exists()):
             CloudCredentials(access_token=token, expires_at=expires_at).save()
-        return token
 
     def _latest(self):
-        return self.get_queryset().filter(
-                expires_at__gt=timezone.now()
-            ).latest(
-                'expires_at'
-            )
+        """
+        Get the latest valid credentials or return None.
+        """
+        try:
+            return self.get_queryset().filter(
+                    expires_at__gt=timezone.now()
+                ).latest(
+                    'expires_at'
+                )
+        except CloudCredentials.DoesNotExist:
+            return None
 
 
 class CloudCredentials(models.Model):

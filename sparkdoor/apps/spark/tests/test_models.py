@@ -11,6 +11,7 @@ from sparkdoor.libs.httmock import HTTMock
 from .mocks import spark_cloud_mock, ACCESS_TOKEN
 from .factories import CloudCredentialsFactory
 from ..models import CloudCredentials, Device
+from ..services import SparkCloud
 
 
 spark_test_settings = {
@@ -37,6 +38,7 @@ class CloudCredentialsTestCase(TestCase):
         cls.expired_dt = now + timedelta(days=-10)
         cls.current_dt = now + timedelta(days=90)
         cls.old_dt = now + timedelta(days=10)
+        cls.cloud = SparkCloud(spark_test_settings['CLOUD_API_URI'])
 
     def test_expires_soon(self):
         """
@@ -86,56 +88,50 @@ class CloudCredentialsTestCase(TestCase):
         self.assertEqual(token, None)
         exp.delete()
 
-    def test_renew_token(self):
+    def test_refresh_token(self):
         """
-        Test that `renew_token` makes a new record and returns the new
-        token.
+        Test that `refresh_token` gets a new token.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.renew_token()
-        self.assertEqual(token, ACCESS_TOKEN)
+            CloudCredentials.objects.refresh_token()
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
-    def test_renew_token_not_needed(self):
+    def test_renew_token(self):
         """
-        Test that `renew_token` only renews the token if needed.
+        Test that `_renew_token` makes a new record.
         """
-        token = 'good_token'
-        cur = self.factory.create(access_token=token, expires_at=self.current_dt)
+        self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
-            renewed_token = CloudCredentials.objects.renew_token()
-        self.assertEqual(renewed_token, token)
+            CloudCredentials.objects._renew_token(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_discover_tokens(self):
         """
-        Test that `discover_tokens` finds new tokens, saves the most
-        recent, and returns the token.
+        Test that `_discover_tokens` finds new tokens and saves the most
+        recent.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.discover_tokens()
-        self.assertEqual(token, ACCESS_TOKEN)
+            found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
 
-    def test_discover_tokens_exiting_token(self):
+    def test_discover_tokens_existing_token(self):
         """
-        Test that `discover_tokens` does not create a new record if the
+        Test that `_discover_tokens` does not create a new record if the
         token it finds is already recorded.
         """
         self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
         self.assertEqual(CloudCredentials.objects.count(), 1)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.discover_tokens()
-        self.assertEqual(token, ACCESS_TOKEN)
+            found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.first().access_token, token)
+        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
 
 
 @override_settings(SPARK=spark_test_settings)

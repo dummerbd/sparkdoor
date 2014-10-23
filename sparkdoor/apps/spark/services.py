@@ -8,7 +8,7 @@ from django.utils import timezone
 from hammock import Hammock
 
 
-CLOUD_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+CLOUD_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 class SparkCloud:
@@ -95,7 +95,7 @@ class SparkCloud:
                     CLOUD_DATETIME_FORMAT)
                 if expires_at is None or entry['expires_at'] > expires_at:
                     expires_at = entry['expires_at']
-                    token = entry['access_token']
+                    token = entry['token']
                     self.access_token = token
         return (token, expires_at)
 

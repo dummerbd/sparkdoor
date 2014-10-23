@@ -87,7 +87,7 @@ def v1_access_tokens(path, request):
         res = resource(path, request, False)
         c = json.loads(res._content.decode('utf-8'))
         # the first token is the most recent valid entry
-        c[0]['access_token'] = ACCESS_TOKEN
+        c[0]['token'] = ACCESS_TOKEN
         c[0]['expires_at'] = (datetime.now() + timedelta(days=90)).strftime(
             CLOUD_DATETIME_FORMAT)
         # the second token is old

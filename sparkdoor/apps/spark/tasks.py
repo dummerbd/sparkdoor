@@ -6,12 +6,8 @@ from django.core.cache import cache
 from contextlib import contextmanager
 
 from celery import shared_task
-from celery.utils.log import get_task_logger
 
 from .models import CloudCredentials
-
-
-logger = get_task_logger(__name__)
 
 
 LOCK_EXPIRE = 60 * 3 # 3 minutes
@@ -45,11 +41,6 @@ def refresh_access_token():
     and request a new one when needed.
     """
     key = '{0}.refresh_access_token'.format(__name__)
-    logger.debug('Attempting to acquire lock...')
     with task_lock(key) as locked:
         if locked:
-            logger.debug('Lock acquired - discovering existing tokens...')
-            CloudCredentials.objects.renew_token()
-            logger.debug('Token refreshed.')
-        else:
-            logger.debug('Lock not acquired.')
+            CloudCredentials.objects.refresh_token()

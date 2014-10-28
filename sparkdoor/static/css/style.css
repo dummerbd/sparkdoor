@@ -27,13 +27,52 @@
     color:#FFFFFF;
 }
 
-#login {
-    position: absolute;
-    right:20px;
-    top:0px;
-    color: #FFFFFF;
+main {
+    background-color: white;
 }
 
-.login-box {
-    box-shadow: 10px 10px 5px #88888;
+#buttons {
+    text-align: center;
+}
+
+body {
+    background-image: url('/static/img/background.png');
+}
+
+a:link {
+    text-decoration: none;
+}
+
+a:visited {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+    color: black;
+}
+
+a:active {
+    text-decoration: none;
+}
+
+#fb_btn {
+    background-color: #3B5998;
+}
+
+#tw_btn {
+    background-color: #56A3D9;
+}
+
+#go_btn {
+    background-color: #DD4B39;
+}
+
+.loginbtn {
+    border-left: solid black 1px;
+    padding-right: 7px;
+    color: black;
+    font-weight: bold;
+    display: inline-block;
+    height: 32px;
 }

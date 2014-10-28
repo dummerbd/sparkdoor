@@ -106,7 +106,7 @@ class Device(models.Model):
         always be an integer for a successful call. An unsuccessful call
         will raise a `ServiceError`.
         """
-        pass
+        return self._cloud_device.call(func_name, func_args)
     call.do_not_call_in_templates = True
 
     def read(self, var_name):
@@ -114,7 +114,7 @@ class Device(models.Model):
         Read the value of a variable. An unsuccessful read will raise a
         `ServiceError`.
         """
-        pass
+        return self._cloud_device.read(var_name)
 
     @property
     def variables(self):
@@ -134,8 +134,9 @@ class Device(models.Model):
     @property
     def _cloud_device(self):
         """
-        Get a `CloudDevice` instance from the Spark cloud.
+        Get a `CloudDevice` instance from the Spark cloud and cache it.
         """
-        cloud = SparkCloud(SparkSettings().API_URI, 
-            CloudCredentials.objects.access_token())
-        return CloudDevice(cloud, id=self.device_id)
+        if not hasattr(self, '_cached_cloud_device'):
+            cloud = SparkCloud(SparkSettings().API_URI, CloudCredentials.objects.access_token())
+            self._cached_cloud_device = CloudDevice(cloud, id=self.device_id)
+        return self._cached_cloud_device

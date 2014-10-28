@@ -159,10 +159,30 @@ class DeviceTestCase(TestCase):
         cls.cred.delete()
         cls.device.delete()
 
+    def test_call(self):
+        """
+        Test that `call` calls a function of a cloud device and returns
+        the result.
+        """
+        with HTTMock(spark_cloud_mock):
+            for f in self.device.functions:
+                expected = self.cloud_device.call(f, 'args')
+                self.assertEqual(self.device.call(f, 'args'), expected)
+
+    def test_read(self):
+        """
+        Test that `read` reads a variable from a cloud device and
+        returns the result.
+        """
+        with HTTMock(spark_cloud_mock):
+            for v in self.device.variables.keys():
+                expected = self.cloud_device.read(v)
+                self.assertEqual(self.device.read(v), expected)
+
     def test_variables(self):
         """
         Test that `variables` returns the variables available from a
-        device.
+        cloud device.
         """
         with HTTMock(spark_cloud_mock):
             self.assertEqual(self.device.variables, self.cloud_device.variables)
@@ -170,7 +190,7 @@ class DeviceTestCase(TestCase):
     def test_functions(self):
         """
         Test that `functions` returns the functions available from a
-        device.
+        cloud device.
         """
         with HTTMock(spark_cloud_mock):
             self.assertEqual(self.device.functions, self.cloud_device.functions)

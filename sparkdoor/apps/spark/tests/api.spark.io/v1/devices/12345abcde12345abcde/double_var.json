@@ -1,0 +1,11 @@
+{
+    "name": "double_var",
+    "cmd": "VarReturn",
+    "result": 0.123,
+    "coreInfo": {
+        "last_heard": null,
+        "connected": true, 
+        "last_app": "", 
+        "deviceID": "12345abcde12345abcde"
+    }
+}

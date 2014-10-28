@@ -4,6 +4,19 @@ base.py - common settings module.
 import os
 
 
+def get_env_or_error(key, msg):
+    """
+    Attempt to get an environment variable, throw an exception with
+    `msg` if is not set.
+    """
+    val = os.environ.get(key, None)
+    from django.core.exceptions import ImproperlyConfigured
+    if val is None:
+        raise ImproperlyConfigured(
+            'Enviroment variable "{0}" not found: {1}'.format(key, msg))
+    return val
+
+
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..','..')
 
 TEMPLATE_DIRS = (
@@ -18,10 +31,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'groundwork',
 
     # our apps:
     'sparkdoor.apps.common',
-    'groundwork',
+    'sparkdoor.apps.spark',
 
     # allauth
     'allauth',
@@ -32,7 +46,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
 )
 
-SECRET_KEY = os.environ['SPARK_SECRET_KEY']
+SECRET_KEY = get_env_or_error('SPARK_SECRET_KEY', 'should be set to a base64 key and not shared with anyone.')
 
 ALLOWED_HOSTS = []
 
@@ -152,10 +166,43 @@ LOGGING = {
             'level': 'DEBUG',
             'propogate': False,
         },
-        'bip': {
+        'sparkdoor': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propogate': False,
+        },
+        'celery': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propogate': False,
         },
     }
+}
+
+# Celery settings
+BROKER_URL = get_env_or_error('SPARK_CELERY_BROKER_URL', 'should be set to the url for a message broker for Celery')
+
+# Uncomment to enable result storage
+CELERY_RESULT_BACKEND = get_env_or_error('SPARK_CELERY_RESULT_URL', 'should be set to the url for a result storage backend for Celery.')
+
+CELERY_IGNORE_RESULT = False
+
+CELERY_TASK_SERIALIZER = 'json'
+
+CELERY_ACCEPT_CONTENT = ['json']
+
+CELERY_RESULT_SERIALIZER = 'json'
+
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+    'sparkcloud_token_refresh': {
+        'task': 'sparkdoor.apps.spark.tasks.refresh_access_token',
+        'schedule': timedelta(days=1)
+    }
+}
+
+# Spark cloud settings
+SPARK = {
+    'CLOUD_USERNAME': get_env_or_error('SPARK_CLOUD_USERNAME', 'should be set to the login for a spark cloud service.'),
+    'CLOUD_PASSWORD': get_env_or_error('SPARK_CLOUD_PASSWORD', 'should be set to the password for SPARK_CLOUD_USERNAME.')
 }

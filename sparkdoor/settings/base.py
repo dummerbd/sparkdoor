@@ -186,7 +186,7 @@ from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     'sparkcloud_token_refresh': {
         'task': 'sparkdoor.apps.spark.tasks.refresh_access_token',
-        'schedule': timedelta(seconds=15)
+        'schedule': timedelta(days=1)
     }
 }
 

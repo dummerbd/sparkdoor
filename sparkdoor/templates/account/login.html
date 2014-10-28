@@ -1,0 +1,73 @@
+{% extends 'common/base.html' %}
+
+{% load i18n %}
+{% load account %}
+{% load groundwork_tags %}
+{% load socialaccount %}
+{% load staticfiles %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
+{% block content %}
+{% for error in form.non_field_errors %}
+  {% groundwork_alert error level=30 %}
+{% endfor %}
+
+<div class="row">
+  <div class="medium-6 medium-offset-3 small-10 small-offset-1 columns">
+    <h1>{% trans "Sign In" %}</h1>
+
+    {% if socialaccount.providers  %}
+    <p>{% blocktrans with site.name as site_name %}Please sign in with one
+    of your existing third party accounts. Or, <a href="{{ signup_url }}">sign up</a>
+    for a {{site_name}} account and sign in below:{% endblocktrans %}</p>
+
+    <div class="socialaccount_ballot">
+
+      <ul class="socialaccount_providers">
+        <a id="fb_btn" class="loginbtn" href="{% provider_login_url 'facebook'%}"><img src="{% static "img/facebook.png" %}"><span >Facebook</span></a>
+        <a id="tw_btn" class="loginbtn" href="{% provider_login_url 'twitter'%}"><img src="{% static "img/twitter.png" %}"><span>Twitter</span></a>
+        <a id="go_btn" class="loginbtn" href="{% provider_login_url 'google'%}"><img src="{% static "img/google.png" %}"><span>Google</span></a>
+      </ul>
+
+      <div class="login-or">{% trans 'or' %}</div>
+
+    </div>
+
+    {% include "socialaccount/snippets/login_extra.html" %}
+
+    {% else %}
+    <p>{% blocktrans %}If you have not created an account yet, then please
+    <a href="{{ signup_url }}">sign up</a> first.{% endblocktrans %}</p>
+    {% endif %}
+
+    <form class="login" method="POST" action="{% url 'account_login' %}">
+      {% csrf_token %}
+      <div class="form-row {% if form.login.errors %}error{% endif %}">
+        <label for="id_login" class="required">{{ form.login.label }}:</label>
+        {{ form.login }}
+        {% for login_error in form.login.errors %}
+          <small class="error">{{ login_error }}</small>
+        {% endfor %}
+      </div>
+      <div class="form-row {% if form.password.errors %}error{% endif %}">
+        <label for="id_password" class="required">{% trans 'Password:' %}</label>
+        {{ form.password }}
+        {% for password_error in form.password.errors %}
+          <small class="error">{{ password_error }}</small>
+        {% endfor %}
+      </div>
+      <div class="form-row">
+        <label for="id_remember">Remember me
+          {{ form.remember }}
+        </label>
+      </div>
+      {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+      {% endif %}
+      <button class="primaryAction" type="submit">{% trans "Sign In" %}</button><br><br>
+      <a class="secondaryAction" href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

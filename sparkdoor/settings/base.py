@@ -19,6 +19,10 @@ def get_env_or_error(key, msg):
 
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..','..')
 
+TEMPLATE_DIRS = (
+    os.path.join(os.path.join(BASE_DIR, 'sparkdoor'), 'templates'),
+)
+
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,9 +41,9 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #'allauth.socialaccount.providers.google',
-    #'allauth.socialaccount.providers.twitter',
-    #'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.facebook',
 )
 
 SECRET_KEY = get_env_or_error('SPARK_SECRET_KEY', 'should be set to a base64 key and not shared with anyone.')
@@ -109,6 +113,13 @@ STATICFILES_DIRS = (
 
 # Redirect login to home page
 LOGIN_REDIRECT_URL = '/'
+SOCIALACCOUNT_QUERY_EMAIL = True
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'SCOPE': ['email', 'publish_stream'],
+        'METHOD': 'js_sdk'  # instead of 'oauth2'
+    }
+}
 
 ADMIN_LOGIN_REDIRECT_URL = '/admin'
 

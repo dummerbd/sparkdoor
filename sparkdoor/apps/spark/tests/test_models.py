@@ -9,7 +9,7 @@ from django.utils import timezone
 from sparkdoor.libs.httmock import HTTMock
 
 from .mocks import spark_cloud_mock, ACCESS_TOKEN
-from .factories import CloudCredentialsFactory
+from .factories import CloudCredentialsFactory, DeviceFactory
 from ..models import CloudCredentials, Device
 from ..services import SparkCloud
 
@@ -139,4 +139,38 @@ class DeviceTestCase(TestCase):
     """
     Test case for `models.Device`.
     """
-    pass
+    @classmethod
+    def setUpClass(cls):
+        """
+        Add a test device and credentials.
+        """
+        cls.cred = CloudCredentialsFactory.create(access_token=ACCESS_TOKEN,
+            expires_at=timezone.now() + timedelta(days=90))
+        cls.cloud = SparkCloud(spark_test_settings['CLOUD_API_URI'], ACCESS_TOKEN)
+        with HTTMock(spark_cloud_mock):
+            cls.cloud_device = cls.cloud.devices[0]
+        cls.device = DeviceFactory.create(device_id=cls.cloud_device.id)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Cleanup test data.
+        """
+        cls.cred.delete()
+        cls.device.delete()
+
+    def test_variables(self):
+        """
+        Test that `variables` returns the variables available from a
+        device.
+        """
+        with HTTMock(spark_cloud_mock):
+            self.assertEqual(self.device.variables, self.cloud_device.variables)
+
+    def test_functions(self):
+        """
+        Test that `functions` returns the functions available from a
+        device.
+        """
+        with HTTMock(spark_cloud_mock):
+            self.assertEqual(self.device.functions, self.cloud_device.functions)

@@ -7,7 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from .services import SparkCloud
+from .services import SparkCloud, CloudDevice
 from .settings import SparkSettings
 
 
@@ -99,3 +99,43 @@ class Device(models.Model):
 
     class Meta:
         unique_together = ('name', 'user')
+
+    def call(self, func_name, func_args):
+        """
+        Call a function on this device and return the result which will
+        always be an integer for a successful call. An unsuccessful call
+        will raise a `ServiceError`.
+        """
+        pass
+    call.do_not_call_in_templates = True
+
+    def read(self, var_name):
+        """
+        Read the value of a variable. An unsuccessful read will raise a
+        `ServiceError`.
+        """
+        pass
+
+    @property
+    def variables(self):
+        """
+        The available variables for this device as a dictionary mapping
+        a name to a type (either 'int32', 'string', or 'double').
+        """
+        return self._cloud_device.variables
+
+    @property
+    def functions(self):
+        """
+        The available functions for this device in a list.
+        """
+        return self._cloud_device.functions
+
+    @property
+    def _cloud_device(self):
+        """
+        Get a `CloudDevice` instance from the Spark cloud.
+        """
+        cloud = SparkCloud(SparkSettings().API_URI, 
+            CloudCredentials.objects.access_token())
+        return CloudDevice(cloud, id=self.device_id)

@@ -8,7 +8,7 @@ from django.test import SimpleTestCase, override_settings
 from sparkdoor.libs.httmock import HTTMock
 
 from .mocks import spark_cloud_mock, ACCESS_TOKEN
-from ..services import SparkCloud, Device, ServiceError
+from ..services import SparkCloud, CloudDevice, ServiceError
 
 
 spark_test_settings = {
@@ -91,7 +91,7 @@ class SparkCloudTestCase(SimpleTestCase):
 
     def test_devices(self):
         """
-        Test that `devices` returns a list of available `Device` 
+        Test that `devices` returns a list of available `CloudDevice` 
         instances.
         """
         with HTTMock(spark_cloud_mock):
@@ -100,7 +100,7 @@ class SparkCloudTestCase(SimpleTestCase):
         self.assertIsInstance(devices, list)
         self.assertTrue(len(devices) > 0)
         for d in devices:
-            self.assertIsInstance(d, Device)
+            self.assertIsInstance(d, CloudDevice)
             self.assertEqual(cloud, d.cloud)
 
     def test_devices_with_invalid_access_token(self):
@@ -114,9 +114,9 @@ class SparkCloudTestCase(SimpleTestCase):
 
 
 @override_settings(SPARK=spark_test_settings)
-class DeviceTestCase(SimpleTestCase):
+class CloudDeviceTestCase(SimpleTestCase):
     """
-    Test case for `services.Device`.
+    Test case for `services.CloudDevice`.
     """
     @classmethod
     def setUpClass(cls):

@@ -80,13 +80,13 @@ class SparkCloud:
         response = self._service.v1.devices.GET(params={'access_token': self.access_token})
         if response.ok:
             devices = response.json()
-            return [Device(self, **d) for d in devices]
+            return [CloudDevice(self, **d) for d in devices]
         return []
 
 
-class Device:
+class CloudDevice:
     """
-    Represents a Spark core device.
+    Represents a Spark cloud device.
     """
     def __init__(self, cloud, **kwargs):
         """

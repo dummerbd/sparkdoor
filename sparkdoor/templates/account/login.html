@@ -1,8 +1,10 @@
-{% extends "common/base.html" %}
+{% extends 'common/base.html' %}
 
 {% load i18n %}
 {% load account %}
 {% load groundwork_tags %}
+{% load socialaccount %}
+{% load staticfiles %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
@@ -23,7 +25,9 @@
     <div class="socialaccount_ballot">
 
       <ul class="socialaccount_providers">
-        {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        <a id="fb_btn" class="loginbtn" href="{% provider_login_url 'facebook'%}"><img src="{% static "img/facebook.png" %}"><span >Facebook</span></a>
+        <a id="tw_btn" class="loginbtn" href="{% provider_login_url 'twitter'%}"><img src="{% static "img/twitter.png" %}"><span>Twitter</span></a>
+        <a id="go_btn" class="loginbtn" href="{% provider_login_url 'google'%}"><img src="{% static "img/google.png" %}"><span>Google</span></a>
       </ul>
 
       <div class="login-or">{% trans 'or' %}</div>

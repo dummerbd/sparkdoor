@@ -89,13 +89,38 @@ class CloudCredentials(models.Model):
     objects = CloudCredentialsManager()
 
 
+class DeviceManager(models.Manager):
+    """
+    Custom query set for `Device` model.
+    """
+    def for_user(self, user):
+        """
+        Get a list of devices for a user.
+        """
+        return self.filter(user=user)
+
+    def by_name(self, user, name):
+        """
+        Get a device for a given device name.
+        """
+        return self.for_user(user).get(name=name)
+
+    def by_device_id(self, user, id):
+        """
+        Get a device by an id.
+        """
+        return self.for_user(user).get(device_id=id)
+
+
 class Device(models.Model):
     """
     Stores information about a Spark device.
     """
-    device_id = models.CharField(max_length=250, blank=False)
+    device_id = models.CharField(max_length=250, blank=False, unique=True)
     name = models.CharField(max_length=250, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False)
+
+    objects = DeviceManager()
 
     class Meta:
         unique_together = ('name', 'user')

@@ -150,6 +150,8 @@ class DeviceTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             cls.cloud_device = cls.cloud.devices[0]
         cls.device = DeviceFactory.create(device_id=cls.cloud_device.id)
+        cls.user = cls.device.user
+        cls.extras = [DeviceFactory.create() for _ in range(3)]
 
     @classmethod
     def tearDownClass(cls):
@@ -158,6 +160,31 @@ class DeviceTestCase(TestCase):
         """
         cls.cred.delete()
         cls.device.delete()
+        [e.delete() for e in cls.extras]
+
+    def test_for_user(self):
+        """
+        Test that `for_user` returns the devices for a given user.
+        """
+        devices = Device.objects.for_user(self.user)
+        self.assertEqual(len(devices), 1)
+        self.assertEqual(devices[0], self.device)
+
+    def test_by_name(self):
+        """
+        Test that `by_name` returns a device for a given user and device
+        name.
+        """
+        device = Device.objects.by_name(self.user, self.device.name)
+        self.assertEqual(device, self.device)
+
+    def test_by_device_id(self):
+        """
+        Test that `by_device_id` returns a device for a given user and 
+        device id.
+        """
+        device = Device.objects.by_device_id(self.user, self.device.device_id)
+        self.assertEqual(device, self.device)
 
     def test_call(self):
         """

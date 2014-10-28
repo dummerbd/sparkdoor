@@ -26,6 +26,6 @@ class DeviceFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Device
 
-    device_id = None
+    device_id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'device-{0}'.format(n))
     user = factory.SubFactory(UserFactory)

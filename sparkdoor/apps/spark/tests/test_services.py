@@ -8,7 +8,7 @@ from django.test import SimpleTestCase, override_settings
 from sparkdoor.libs.httmock import HTTMock
 
 from .mocks import spark_cloud_mock, ACCESS_TOKEN
-from ..services import SparkCloud
+from ..services import SparkCloud, Device
 
 
 spark_test_settings = {
@@ -100,7 +100,7 @@ class SparkCloudTestCase(SimpleTestCase):
         self.assertIsInstance(devices, list)
         self.assertTrue(len(devices) > 0)
         for d in devices:
-            self.assertIsInstance(d, SparkCloud.Device)
+            self.assertIsInstance(d, Device)
             self.assertEqual(cloud, d.cloud)
 
     def test_devices_with_invalid_access_token(self):
@@ -112,18 +112,55 @@ class SparkCloudTestCase(SimpleTestCase):
             devices = SparkCloud(self.API_URI, 'invalid_token').devices
         self.assertEqual(devices, [])
 
-    def test_device_functions(self):
+
+@override_settings(SPARK=spark_test_settings)
+class DeviceTestCase(SimpleTestCase):
+    """
+    Test case for `services.Device`.
+    """
+    @classmethod
+    def setUpClass(cls):
         """
-        Test that a `Device` has a `functions` list.
+        Add test settings shortcuts.
+        """
+        cls.API_URI = spark_test_settings['CLOUD_API_URI']
+
+    def test_functions(self):
+        """
+        Test that `functions` contains a list of available function
+        names.
         """
         with HTTMock(spark_cloud_mock):
             device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
             self.assertIsNotNone(device.functions)
 
-    def test_device_variables(self):
+    def test_variables(self):
         """
-        Test that a `Device` has a `variables` list.
+        Test that `variables` contains a dictionary mapping of a name to
+        a variable type.
         """
         with HTTMock(spark_cloud_mock):
             device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
-            self.assertIsNotNone(device.functions)
+            for var_name, var_type in device.variables.items():
+                self.assertIsInstance(var_name, str)
+                self.assertIn(var_type, ['int32', 'double', 'string'])
+
+    def test_call_nonexistant_function(self):
+        """
+        Test that `call` returns None when a nonexistant function name
+        is passed in.
+        """
+        with HTTMock(spark_cloud_mock):
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            ret = device.call('not_a_function', 'some ars')
+        self.assertIsNone(ret)
+
+    def test_call(self):
+        """
+        Test that `call` returns an int after a successful call.
+        """
+        with HTTMock(spark_cloud_mock):
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            func_name = device.functions[0]
+            ret = device.call(func_name, 'some args')
+        self.assertIsInstance(ret, int)

@@ -97,10 +97,44 @@ def v1_access_tokens(path, request):
     return res
 
 
-HANDLERS = {
-    '/oauth/token': oauth_token,
-    '/v1/access_tokens': v1_access_tokens
-}
+def valid_func_token(request):
+    """
+    Check that a valid access token was used with a function request.
+    """
+    return request.original.data.get('access_token', None) == ACCESS_TOKEN
+
+
+def device_func(path, request):
+    """
+    Respond to the `/v1/devices/<device_id>/<func>` resource which 
+    represents a function call.
+    """
+    res = response(400, {}, HEADERS, None, 5, request)
+    if request.method.lower() == POST and valid_func_token(request):
+        return resource(path, request, False)
+
+
+def device_var(path, request):
+    """
+    Respond to the `/v1/devices/<device_id>/<var>` resource which 
+    represents a variable.
+    """
+    res = response(400, {}, HEADERS, None, 5, request)
+    if request.method.lower() == GET:
+        res = resource(path, request)
+        if res.status_code == 200:
+            c = json.loads(res._content.decode('utf-8'))
+            c['coreInfo']['last_heard'] = datetime.now().strftime(CLOUD_DATETIME_FORMAT)
+            res._content = c
+    return res
+
+
+HANDLERS = [
+    ('/oauth/token', oauth_token),
+    ('/v1/access_tokens', v1_access_tokens),
+    ('/v1/devices/12345abcde12345abcde/func', device_func),
+    ('/v1/devices/12345abcde12345abcde/', device_var)
+]
 
 
 @all_requests
@@ -119,7 +153,7 @@ def spark_cloud_mock(url_split, request):
     request paths.
     """
     path = url_split.path
-    for p, handler in HANDLERS.items():
+    for p, handler in HANDLERS:
         if path.startswith(p):
             return handler(path, request)
     return resource(path, request)

@@ -17,42 +17,6 @@ class SparkCloud:
     evaluation. Requests to the Spark cloud are sent on demand and
     cached.
     """
-    class Device:
-        """
-        Represents a Spark core device.
-        """
-        def __init__(self, cloud, **kwargs):
-            """
-            Copy `kwargs` onto instance.
-            """
-            self.cloud = cloud
-            self.name = None
-            self.id = None
-            self.connected = None
-            self.last_app = None
-            self.last_heard = None
-            [setattr(self, k, v) for k, v in kwargs.items()]
-
-        @property
-        def _extra(self):
-            """
-            Get extra info from the cloud when requested. Result is
-            cached.
-            """
-            if not hasattr(self, '_extra_cached'):
-                response = self.cloud._service.v1.devices.GET(self.id,
-                    params={'access_token':self.cloud.access_token})
-                self._extra_cached = response.json() if response.ok else {}
-            return self._extra_cached
-
-        @property
-        def variables(self):
-            return self._extra.get('variables', {})
-
-        @property
-        def functions(self):
-            return self._extra.get('functions', [])
-
     def __init__(self, api_uri, access_token=None):
         """
         Instances a new web service using the path in `api_uri`. An 
@@ -109,5 +73,62 @@ class SparkCloud:
         response = self._service.v1.devices.GET(params={'access_token': self.access_token})
         if response.ok:
             devices = response.json()
-            return [SparkCloud.Device(self, **d) for d in devices]
+            return [Device(self, **d) for d in devices]
         return []
+
+
+class Device:
+    """
+    Represents a Spark core device.
+    """
+    def __init__(self, cloud, **kwargs):
+        """
+        Copy `kwargs` onto instance.
+        """
+        self.cloud = cloud
+        self.name = None
+        self.id = None
+        self.connected = None
+        self.last_app = None
+        self.last_heard = None
+        [setattr(self, k, v) for k, v in kwargs.items()]
+
+    @property
+    def _extra(self):
+        """
+        Get extra info from the cloud when requested. Result is
+        cached.
+        """
+        if not hasattr(self, '_extra_cached'):
+            response = self.cloud._service.v1.devices.GET(self.id,
+                params={'access_token':self.cloud.access_token})
+            self._extra_cached = response.json() if response.ok else {}
+        return self._extra_cached
+
+    def call(self, func_name, func_args):
+        """
+        Call a function on this device and return the result which will
+        always be an integer for a successful call. An unsuccessful call
+        will return None.
+        """
+        func_name, func_args = str(func_name), str(func_args)
+        response = self.cloud._service.v1.devices.POST(self.id, func_name,
+            data={'access_token':self.cloud.access_token, 'args':func_args})
+        if response.ok:
+            return response.json().get('return_value', 0)
+        return None
+
+    @property
+    def variables(self):
+        """
+        The available variables for this device as a dictionary mapping
+        a name to a type (either 'int32', 'string', or 'double').
+        """
+        return self._extra.get('variables', {})
+
+    @property
+    def functions(self):
+        """
+        The available functions for this device in a list.
+        """
+        return self._extra.get('functions', [])

@@ -3,13 +3,10 @@
     "name": "test_core",
     "connected": true,
     "variables": {
-        "test": 123
+        "int_var": "int32",
+        "string_var": "string",
+        "double_var": "double"
     },
-    "functions": [
-        "digitalread",
-        "digitalwrite",
-        "analogread",
-        "analogwrite"
-    ],
+    "functions": [ "func" ],
     "cc3000_patch_version": "1.29"
 }

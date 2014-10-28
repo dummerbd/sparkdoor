@@ -11,6 +11,13 @@ from hammock import Hammock
 CLOUD_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
+class ServiceError(Exception):
+    """
+    Generic service error.
+    """
+    pass
+
+
 class SparkCloud:
     """
     Interface to interacting with a Spark cloud web service with lazy
@@ -109,14 +116,25 @@ class Device:
         """
         Call a function on this device and return the result which will
         always be an integer for a successful call. An unsuccessful call
-        will return None.
+        will raise a `ServiceError`.
         """
-        func_name, func_args = str(func_name), str(func_args)
+        func_args = str(func_args)
         response = self.cloud._service.v1.devices.POST(self.id, func_name,
             data={'access_token':self.cloud.access_token, 'args':func_args})
         if response.ok:
-            return response.json().get('return_value', 0)
-        return None
+            return response.json()['return_value']
+        raise ServiceError
+
+    def read(self, var_name):
+        """
+        Read the value of a variable. An unsuccessful read will raise a
+        `ServiceError`.
+        """
+        response = self.cloud._service.v1.devices.GET(self.id, var_name,
+            params={'access_token':self.cloud.access_token})
+        if response.ok:
+            return response.json()['result']
+        raise ServiceError
 
     @property
     def variables(self):

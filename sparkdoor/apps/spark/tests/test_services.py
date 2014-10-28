@@ -8,7 +8,7 @@ from django.test import SimpleTestCase, override_settings
 from sparkdoor.libs.httmock import HTTMock
 
 from .mocks import spark_cloud_mock, ACCESS_TOKEN
-from ..services import SparkCloud, Device
+from ..services import SparkCloud, Device, ServiceError
 
 
 spark_test_settings = {
@@ -147,13 +147,13 @@ class DeviceTestCase(SimpleTestCase):
 
     def test_call_nonexistant_function(self):
         """
-        Test that `call` returns None when a nonexistant function name
-        is passed in.
+        Test that `call` raises `ServiceError` when a nonexistant
+        function name is used.
         """
         with HTTMock(spark_cloud_mock):
             device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
-            ret = device.call('not_a_function', 'some ars')
-        self.assertIsNone(ret)
+            with self.assertRaises(ServiceError):
+                ret = device.call('not_a_function', 'some args')
 
     def test_call(self):
         """
@@ -164,3 +164,23 @@ class DeviceTestCase(SimpleTestCase):
             func_name = device.functions[0]
             ret = device.call(func_name, 'some args')
         self.assertIsInstance(ret, int)
+
+    def test_read_nonexistant_variable(self):
+        """
+        Test that `read` raises a `ServiceError` when a nonexistant
+        variable name is used.
+        """
+        with HTTMock(spark_cloud_mock):
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            with self.assertRaises(ServiceError):
+                ret = device.read('not_a_variable')
+
+    def test_read(self):
+        """
+        Test that `read` returns either an `int`, `float`, or `string`.
+        """
+        with HTTMock(spark_cloud_mock):
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            for name in device.variables.keys():
+                val = device.read(name)
+                self.assertIsInstance(val, (int, float, str))

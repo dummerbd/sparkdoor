@@ -125,7 +125,7 @@ def device_var(path, request):
         if res.status_code == 200:
             c = json.loads(res._content.decode('utf-8'))
             c['coreInfo']['last_heard'] = datetime.now().strftime(CLOUD_DATETIME_FORMAT)
-            res._content = c
+            res._content = bytes(json.dumps(c), 'utf-8')
     return res
 
 

@@ -1,5 +1,5 @@
 {% load static %}
-{% load groundwork_tags %}
+{% load bootstrap3 %}
 
 <!DOCTYPE html>
 <html>
@@ -8,12 +8,12 @@
 
   <title>SparkDoor{% block title %}{% endblock title %}</title>
 
-  {# Base Foundation CSS #}
-  {% block groundwork_css %}
-  {% groundwork_css "normalize" %}
-  {% groundwork_css "foundation.min" %}
-  {% groundwork_css "foundation-icons" %}
-  {% endblock groundwork_css %}
+  {# Load CSS and JavaScript #}
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+
+  
+
   {# Custom CSS #}
   {% block css %}
   <link rel="stylesheet" type="text/css" href="{% static "css/style.css" %}" />
@@ -31,12 +31,39 @@
   {% block head_js %}
   {% endblock head_js %}
 </head>
+
 <body {% block body_attr %}{% endblock body_attr %}>
 
   {% block header %}
-  <nav class="top-bar" data-topbar>
-    <h1 id="heading"><a href="#">SparkDoor</a></h1>
-  </nav>
+  <div id="wrap">
+    <header>
+      <nav class="navbar navbar-static-top" role="navigation">
+        <div class="container-fluid">
+          <!-- Groups all the good stuff for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url "common:home"%}">SparkDoor</a>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+              <li><a href="#">Login</a></li>
+              <li><a href="#">Signup</a></li>
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+      <div class="container">
+        <h1 style="color: #45BD9A;">SparkDoor</h1>
+      </div>
+    </header>
+  </div>
   <!-- End Navigation -->
   {% endblock header %}
 
@@ -45,7 +72,8 @@
     <main class="large-12 columns">
       {% block messages %}
       {% for msg in messages %}
-      {% groundwork_alert msg msg.level %}
+      {# Display django.contrib.messages as Bootstrap alerts #}
+  {% bootstrap_messages %}
       {% endfor %}
       {% endblock messages %}
 
@@ -61,7 +89,6 @@
   {% endblock footer %}
   <!-- End Footer -->
 
-  {% groundwork_js %}
 
   {# Custom JS #}
   {% block body_js %}{% endblock body_js %}

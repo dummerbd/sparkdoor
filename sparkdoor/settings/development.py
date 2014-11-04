@@ -10,8 +10,8 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-_db_user = os.environ['SPARK_DATABASE_USER']
-_db_pass = os.environ['SPARK_DATABASE_PASSWORD']
+_db_user = get_env_or_error('SPARK_DATABASE_USER', 'should be the database username')
+_db_pass = get_env_or_error('SPARK_DATABASE_PASSWORD', 'should be the database password')
 
 DATABASES = {
     'default': {

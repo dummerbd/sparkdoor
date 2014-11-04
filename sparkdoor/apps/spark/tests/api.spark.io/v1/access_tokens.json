@@ -1,0 +1,12 @@
+[
+    {
+        "token": null,
+        "expires_at": null,
+        "client": "spark"
+    },
+    {
+        "token": "old_token",
+        "expires_at": null,
+        "client": "spark"
+    }
+]

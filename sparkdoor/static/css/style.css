@@ -42,36 +42,52 @@ body {
     background-color: #fff;
 }
 
-header .navbar {
-    border-bottom: 1px solid rgba(199, 192, 222, .1);
-    z-index: 100;
-    background: transparent;
-
+main {
+    background-color: white;
 }
 
-.navbar-brand {
-    color: #fff !important;
+#buttons {
+    text-align: center;
 }
 
-.navbar-default .navbar-nav>li>a {
-    color: #fff !important;
+body {
+    background-image: url('/static/img/background.png');
 }
 
-.body-container {
-    margin-left: auto;
-    margin-right: auto;
+a:link {
+    text-decoration: none;
 }
 
-.extend {
-    height: 650px;
+a:visited {
+    text-decoration: none;
 }
 
-#header {
-    font-size: 6em;
-    color: #45BD9A;
+a:hover {
+    text-decoration: none;
+    color: black;
 }
 
-#signup-body {
-    margin-top: 10px;
-    margin-bottom: 10px;
+a:active {
+    text-decoration: none;
+}
+
+#fb_btn {
+    background-color: #3B5998;
+}
+
+#tw_btn {
+    background-color: #56A3D9;
+}
+
+#go_btn {
+    background-color: #DD4B39;
+}
+
+.loginbtn {
+    border-left: solid black 1px;
+    padding-right: 7px;
+    color: black;
+    font-weight: bold;
+    display: inline-block;
+    height: 32px;
 }

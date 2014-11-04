@@ -24,8 +24,8 @@ SITE_ID = 2
 
 # Relies on Heroku's sendgrid addon
 EMAIL_HOST = "smtp.sendgrid.net"
-EMAIL_HOST_USER = os.environ.get("SENDGRID_USERNAME", "")
-EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_PASSWORD", "")
+EMAIL_HOST_USER = get_env_or_error('SENDGRID_USERNAME', 'check that the Sendgrid addon has been installed.')
+EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_PASSWORD", 'check that the Sendgrid addon has been installed.')
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 

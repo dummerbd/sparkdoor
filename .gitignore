@@ -56,3 +56,12 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# Sublime
+*.sublime-*
+
+# Redis dump
+dump.rdb
+
+# Celery Dump
+celerybeat-schedule

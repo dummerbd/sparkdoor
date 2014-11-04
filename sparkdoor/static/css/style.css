@@ -6,27 +6,27 @@ header {
     color: #E7E4F1;
 }
 
-a {
+.login>a {
     background: transparent;
 }
 
-a:link {
+.login>a:link {
     text-decoration: none;
     color: #fff;
 }
 
-a:visited {
+.login>a:visited {
     text-decoration: none;
     color: #fff;
 }
 
-a:hover {
+.login>a:hover {
     text-decoration: none;
     color: #fff;
     background-color: #664A8C !important;
 }
 
-a:active {
+.login>a:active {
     text-decoration: none;
     color: #fff;
 }
@@ -37,17 +37,41 @@ a:active {
     height: auto !important;
 
 }
+
 body {
     background-color: #fff;
 }
 
 header .navbar {
     border-bottom: 1px solid rgba(199, 192, 222, .1);
+    z-index: 100;
+    background: transparent;
+
 }
 
-.container{
-    margin-right: auto;
+.navbar-brand {
+    color: #fff !important;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #fff !important;
+}
+
+.body-container {
     margin-left: auto;
-    padding-left: 15px;
-    padding-right: 15px;
+    margin-right: auto;
+}
+
+.extend {
+    height: 650px;
+}
+
+#header {
+    font-size: 6em;
+    color: #45BD9A;
+}
+
+#signup-body {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

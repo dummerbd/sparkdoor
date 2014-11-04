@@ -22,6 +22,7 @@ INSTALLED_APPS = (
     # our apps:
     'sparkdoor.apps.common',
     'bootstrap3',
+    'bootstrapform',
 
     # allauth
     'allauth',

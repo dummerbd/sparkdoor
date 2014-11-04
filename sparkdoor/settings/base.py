@@ -42,9 +42,9 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
-    'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.google',
+    #'allauth.socialaccount.providers.twitter',
+    #'allauth.socialaccount.providers.facebook',
 )
 
 SECRET_KEY = get_env_or_error('SPARK_SECRET_KEY', 'should be set to a base64 key and not shared with anyone.')
@@ -112,8 +112,8 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'sparkdoor/static'),
 )
 
-# Redirect login to home page
-LOGIN_REDIRECT_URL = '/'
+# Redirect login to user devices page
+LOGIN_REDIRECT_URL = '/devices'
 SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {

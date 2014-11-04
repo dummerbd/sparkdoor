@@ -1,30 +1,45 @@
-.top-bar {
-    height: 200px;
-    background-image:url('/static/img/blueprint.jpg');
-    background-repeat: repeat;
+header {
+    background-color: #362C57;
+    background-image: -webkit-radial-gradient(50% top, rgba(123, 84, 182, .6) 0, rgba(123, 84, 182, 0) 75%), -webkit-radial-gradient(right top, rgba(127, 74, 162, .5) 0, rgba(127, 74, 162, 0) 57%);
+    background-size: 100% 1000px;
+    background-repeat: no-repeat;
+    color: #E7E4F1;
 }
 
-#heading {
-    margin-left:auto;
-    margin-right:auto;
-    font-size: 50px;
-    text-align:center;
+.login>a {
+    background: transparent;
 }
-#heading>a:link {
+
+.login>a:link {
     text-decoration: none;
-    color:#FFFFFF;
+    color: #fff;
 }
-#heading>a:visited {
+
+.login>a:visited {
     text-decoration: none;
-    color:#FFFFFF;
+    color: #fff;
 }
-#heading>a:hover {
+
+.login>a:hover {
     text-decoration: none;
-    color:#FFFFFF;
+    color: #fff;
+    background-color: #664A8C !important;
 }
-#heading>a:active {
+
+.login>a:active {
     text-decoration: none;
-    color:#FFFFFF;
+    color: #fff;
+}
+
+
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+
+}
+
+body {
+    background-color: #fff;
 }
 
 main {

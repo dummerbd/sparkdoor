@@ -31,7 +31,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'groundwork',
+    'bootstrap3',
+    'bootstrapform',
 
     # our apps:
     'sparkdoor.apps.common',

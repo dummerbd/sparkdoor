@@ -1,6 +1,6 @@
 -r common.txt
 
-coverage==3.7
-django-debug-toolbar==1.2
-factory-boy==2.4
-httmock==1.2
+coverage>=3.7,<4
+django-debug-toolbar>=1.2,<2
+factory-boy>=2.4,<3
+httmock>=1.2,<2

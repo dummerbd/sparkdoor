@@ -3,6 +3,8 @@
 {% load url from future %}
 {% load i18n %}
 {% load bootstrap %}
+{% load socialaccount %}
+{% load staticfiles %}
 {% load account %}
 
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
@@ -21,9 +23,9 @@ below:{% endblocktrans %}</p>
 <div class="socialaccount_ballot">
 
   <ul class="socialaccount_providers">
-    <a id="fb_btn" class="loginbtn" href="{% provider_login_url 'facebook'%}"><img src="{% static "img/facebook.png" %}"><span >Facebook</span></a>
-    <a id="tw_btn" class="loginbtn" href="{% provider_login_url 'twitter'%}"><img src="{% static "img/twitter.png" %}"><span>Twitter</span></a>
-    <a id="go_btn" class="loginbtn" href="{% provider_login_url 'google'%}"><img src="{% static "img/google.png" %}"><span>Google</span></a>
+    <a id="fb_btn" class="loginbtn" href="{% provider_login_url 'facebook'%}"><img src="{% static "img/facebook.png" %}"></a>
+    <a id="tw_btn" class="loginbtn" href="{% provider_login_url 'twitter'%}"><img src="{% static "img/twitter.png" %}"></a>
+    <a id="go_btn" class="loginbtn" href="{% provider_login_url 'google'%}"><img src="{% static "img/google.png" %}"></a>
   </ul>
   
   <div class="login-or">{% trans 'or' %}</div>

@@ -11,5 +11,11 @@ urlpatterns = patterns('',
     # this needs to be last:
     url(r'^$',
         views.HomeView.as_view(),
-        name='home'),
+        name='home'
+    ),
+
+    url(r'^devices$',
+        views.DevicesView.as_view(),
+        name='devices'
+    )
 )

@@ -123,7 +123,7 @@ class CloudDevice:
             data={'access_token':self.cloud.access_token, 'args':func_args})
         if response.ok:
             return response.json()['return_value']
-        raise ServiceError
+        raise ServiceError(response.status_code)
 
     def read(self, var_name):
         """
@@ -134,7 +134,7 @@ class CloudDevice:
             params={'access_token':self.cloud.access_token})
         if response.ok:
             return response.json()['result']
-        raise ServiceError
+        raise ServiceError(response.status_code)
 
     @property
     def variables(self):

@@ -42,9 +42,9 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #'allauth.socialaccount.providers.google',
-    #'allauth.socialaccount.providers.twitter',
-    #'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.facebook',
 )
 
 SECRET_KEY = get_env_or_error('SPARK_SECRET_KEY', 'should be set to a base64 key and not shared with anyone.')

@@ -7,7 +7,7 @@ from sparkdoor.libs.httmock import HTTMock
 from sparkdoor.libs.factories import UserFactory
 from sparkdoor.apps.spark.services import SparkCloud
 from sparkdoor.apps.spark.tests.mocks import spark_cloud_mock, ACCESS_TOKEN
-from sparkdoor.apps.spark.tests.factories import DeviceFactory
+from sparkdoor.apps.spark.tests.factories import CloudCredentialsFactory, DeviceFactory
 
 from .. import forms
 
@@ -34,6 +34,15 @@ class RegisterDeviceFormTestCase(TestCase):
         cls.api_uri = spark_test_settings['CLOUD_API_URI']
         cls.user = UserFactory.create()
         cls.device = DeviceFactory.create(user=cls.user, name='taken', device_id='123')
+        cls.cred = CloudCredentialsFactory.create(access_token=ACCESS_TOKEN)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Clean up test data.
+        """
+        cls.device.delete()
+        cls.cred.delete()
 
     def test_taken_device_id(self):
         """

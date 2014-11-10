@@ -38,7 +38,7 @@ class CloudCredentialsManager(models.Manager):
     def refresh_token(self):
         """
         Check if the access token will expire soon, if so then attempt
-        to find any existed tokens on the cloud account. If no existing
+        to find any existing tokens on the cloud account. If no existing
         tokens are found then a new one will be requested.
         """
         latest = self._latest()

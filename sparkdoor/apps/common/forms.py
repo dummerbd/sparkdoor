@@ -3,7 +3,7 @@ forms.py - form classes for the `common` app.
 """
 from django.forms import ModelForm
 
-from sparkdoor.apps.spark.models import Device
+from sparkdoor.apps.spark.models import CloudCredentials, Device
 
 
 class RegisterDeviceForm(ModelForm):
@@ -29,5 +29,7 @@ class RegisterDeviceForm(ModelForm):
         # Don't bother checking with the cloud if this device id is
         # already stored.
         if not Device.objects.filter(device_id=device_id).exists():
-            pass
+            device = CloudCredentials.objects.cloud_service().device(device_id)
+            if device is None:
+                self.add_error('device_id', 'This device id is invalid.')
         return data

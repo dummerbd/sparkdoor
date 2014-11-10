@@ -70,8 +70,7 @@ class SparkCloud:
                     self.access_token = token
         return (token, expires_at)
 
-    @property
-    def devices(self):
+    def all_devices(self):
         """
         Get the available Spark cores from this access token.
         """

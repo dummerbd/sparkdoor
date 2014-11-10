@@ -148,7 +148,7 @@ class DeviceTestCase(TestCase):
             expires_at=timezone.now() + timedelta(days=90))
         cls.cloud = SparkCloud(spark_test_settings['CLOUD_API_URI'], ACCESS_TOKEN)
         with HTTMock(spark_cloud_mock):
-            cls.cloud_device = cls.cloud.devices[0]
+            cls.cloud_device = cls.cloud.all_devices()[0]
         cls.device = DeviceFactory.create(device_id=cls.cloud_device.id)
         cls.user = cls.device.user
         cls.extras = [DeviceFactory.create() for _ in range(3)]

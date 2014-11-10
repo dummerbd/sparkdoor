@@ -5,7 +5,8 @@ from django.test import TestCase, override_settings
 
 from sparkdoor.libs.httmock import HTTMock
 from sparkdoor.libs.factories import UserFactory
-from sparkdoor.apps.spark.tests.mocks import spark_cloud_mock
+from sparkdoor.apps.spark.services import SparkCloud
+from sparkdoor.apps.spark.tests.mocks import spark_cloud_mock, ACCESS_TOKEN
 from sparkdoor.apps.spark.tests.factories import DeviceFactory
 
 from .. import forms
@@ -30,6 +31,7 @@ class RegisterDeviceFormTestCase(TestCase):
         """
         Add a test user and device.
         """
+        cls.api_uri = spark_test_settings['CLOUD_API_URI']
         cls.user = UserFactory.create()
         cls.device = DeviceFactory.create(user=cls.user, name='taken', device_id='123')
 
@@ -39,9 +41,31 @@ class RegisterDeviceFormTestCase(TestCase):
         entry) will add an error.
         """
         data = { 'user': self.user.id, 'device_id': self.device.device_id, 'name': 'new' }
-        form = self.form_class(data)
-        self.assertFalse(form.is_valid())
-        errors = form.errors.as_data()
-        print(errors)
+        with HTTMock(spark_cloud_mock):
+            form = self.form_class(data)
+            errors = form.errors.as_data()
         self.assertEqual(len(errors), 1)
         self.assertIn('device_id', errors.keys())
+
+    def test_nonexistant_device_id(self):
+        """
+        Test that a device id that isn't on the Spark cloud creates a
+        field error.
+        """
+        data = { 'user': self.user.id, 'device_id': 'not_an_id', 'name': 'new' }
+        with HTTMock(spark_cloud_mock):
+            form = self.form_class(data)
+            self.assertFalse(form.is_valid())
+            errors = form.errors.as_data()
+        self.assertEqual(len(errors), 1)
+        self.assertIn('device_id', errors.keys())
+
+    def test_good_device_id(self):
+        """
+        Test that a form with a valid device id is valid.
+        """
+        data = { 'user': self.user.id, 'name': 'new' }
+        with HTTMock(spark_cloud_mock):
+            data['device_id'] = SparkCloud(self.api_uri, ACCESS_TOKEN).all_devices()[0].id
+            form = self.form_class(data)
+            self.assertTrue(form.is_valid())

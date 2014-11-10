@@ -25,4 +25,9 @@ class RegisterDeviceForm(ModelForm):
         checks so just return.
         """
         data = super(RegisterDeviceForm, self).clean()
+        device_id = data['device_id']
+        # Don't bother checking with the cloud if this device id is
+        # already stored.
+        if not Device.objects.filter(device_id=device_id).exists():
+            pass
         return data

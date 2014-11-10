@@ -82,22 +82,35 @@ class SparkCloud:
             return [CloudDevice(self, **d) for d in devices]
         return []
 
+    def device(self, device_id):
+        """
+        Get an available Spark core for a given device id.
+        """
+        if self.access_token is None:
+            return []
+        response = self._service.v1.devices.GET(device_id, params={'access_token': self.access_token})
+        if response.ok:
+            device = response.json()
+            cloud_device = CloudDevice(self, **device)
+            cloud_device._extra = device
+            return cloud_device
+        return None
+
 
 class CloudDevice:
     """
     Represents a Spark cloud device.
     """
-    def __init__(self, cloud, **kwargs):
+    def __init__(self, cloud, id=None, name=None, connected=True, last_heard=None, **kwargs):
         """
-        Copy `kwargs` onto instance.
+        Constructor.
         """
         self.cloud = cloud
-        self.name = None
-        self.id = None
-        self.connected = None
+        self.name = name
+        self.id = id
+        self.connected = connected
+        self.last_heard = last_heard
         self.last_app = None
-        self.last_heard = None
-        [setattr(self, k, v) for k, v in kwargs.items()]
 
     @property
     def _extra(self):
@@ -110,6 +123,13 @@ class CloudDevice:
                 params={'access_token':self.cloud.access_token})
             self._extra_cached = response.json() if response.ok else {}
         return self._extra_cached
+
+    @_extra.setter
+    def _extra(self, value):
+        """
+        Allows pre-initializing extra info.
+        """
+        self._extra_cached = value
 
     def call(self, func_name, func_args):
         """

@@ -113,6 +113,36 @@ class SparkCloudTestCase(SimpleTestCase):
             devices = cloud.all_devices()
         self.assertEqual(devices, [])
 
+    def test_device_with_invalid_access_token(self):
+        """
+        Test that `device` returns None when an invalid access token is
+        used.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, 'invalid_token')
+            device = cloud.device('123')
+        self.assertIsNone(device)
+
+    def test_device_with_nonexistant_device_id(self):
+        """
+        Test that `device` returns None when an invalid access token is
+        used.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
+            device = cloud.device('not_a_device_id')
+        self.assertIsNone(device)
+
+    def test_device(self):
+        """
+        Test that `device` returns a new `CloudDevice`.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
+            device_id = cloud.all_devices()[0].id
+            device = cloud.device(device_id)
+        self.assertIsInstance(device, CloudDevice)
+
 
 @override_settings(SPARK=spark_test_settings)
 class CloudDeviceTestCase(SimpleTestCase):

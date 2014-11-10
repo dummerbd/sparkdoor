@@ -54,37 +54,47 @@ class CloudCredentialsTestCase(TestCase):
         self.assertFalse(cur.expires_soon())
         self.assertTrue(exp.expires_soon())
 
+    def test_cloud_service(self):
+        """
+        Test that `cloud_service` returns an initialized `SparkCloud`.
+        """
+        cur = self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
+        with HTTMock(spark_cloud_mock):
+            cloud = CloudCredentials.objects.cloud_service()
+        self.assertEqual(cloud.access_token, ACCESS_TOKEN)
+        cur.delete()
+
     def test_access_token(self):
         """
-        Test that `access_token` returns the most recent token that
+        Test that `_access_token` returns the most recent token that
         is not expired.
         """
         exp = self.factory.create(access_token='expired', expires_at=self.expired_dt)
         cur = self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
         old = self.factory.create(access_token='old', expires_at=self.old_dt)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_access_token_empty(self):
         """
-        Test that `access_token` returns None if there isn't any saved
+        Test that `_access_token` returns None if there isn't any saved
         credentials.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, None)
 
     def test_access_token_all_expired(self):
         """
-        Test that `access_token` returns None if all the stored tokens
+        Test that `_access_token` returns None if all the stored tokens
         are expired.
         """
         exp = self.factory.create(access_token='expired', expires_at=self.expired_dt)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, None)
         exp.delete()
 
@@ -96,7 +106,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             CloudCredentials.objects.refresh_token()
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_renew_token(self):
@@ -107,7 +117,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             CloudCredentials.objects._renew_token(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_discover_tokens(self):
@@ -119,7 +129,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
 
     def test_discover_tokens_existing_token(self):
         """
@@ -131,7 +141,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
 
 
 @override_settings(SPARK=spark_test_settings)

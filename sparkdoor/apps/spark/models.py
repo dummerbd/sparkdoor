@@ -15,7 +15,17 @@ class CloudCredentialsManager(models.Manager):
     """
     Custom model manager for `CloudCredentials`.
     """
-    def access_token(self):
+    def cloud_service(self):
+        """
+        Get a cloud service instance initialized with the most current
+        credentials.
+        """
+        latest = self._latest()
+        if latest is None:
+            return None
+        return SparkCloud(SparkSettings().API_URI, latest.access_token)
+
+    def _access_token(self):
         """
         Get the most recent valid `access_token`, if one isn't found
         then None is returned.
@@ -35,7 +45,7 @@ class CloudCredentialsManager(models.Manager):
         if latest is None or latest.expires_soon():
             cloud = SparkCloud(SparkSettings().API_URI)
             self._discover_tokens(cloud)
-            if self.access_token() is None:
+            if self._access_token() is None:
                 self._renew_token(cloud)
 
     def _renew_token(self, cloud):
@@ -162,6 +172,6 @@ class Device(models.Model):
         Get a `CloudDevice` instance from the Spark cloud and cache it.
         """
         if not hasattr(self, '_cached_cloud_device'):
-            cloud = SparkCloud(SparkSettings().API_URI, CloudCredentials.objects.access_token())
-            self._cached_cloud_device = CloudDevice(cloud, id=self.device_id)
+            cloud = CloudCredentials.objects.cloud_service()
+            self._cached_cloud_device = cloud.device(self.device_id)
         return self._cached_cloud_device

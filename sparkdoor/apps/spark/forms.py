@@ -1,20 +1,22 @@
 """
 forms.py - form classes for the `common` app.
 """
-from django.forms import ModelForm
+from django import forms
 
 from .services import ServiceError
 from .models import CloudCredentials, Device
 
 
-class RegisterDeviceForm(ModelForm):
+class RegisterDeviceForm(forms.ModelForm):
     """
     From for registering new spark devices. This form ensures that the
     `device_id` isn't already claimed and exists in the Spark cloud.
     """
     class Meta:
         model = Device
-        fields = ['user', 'device_id', 'name']
+        fields = ['user', 'device_id', 'name', 'app_name']
+
+    app_name = forms.CharField(required=False)
 
     def _get_app_name(self, device):
         """

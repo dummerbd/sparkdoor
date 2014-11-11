@@ -35,9 +35,9 @@ class RegisterDeviceForm(forms.ModelForm):
         read the `app_name` variable.
         """
         data = super(RegisterDeviceForm, self).clean()
-        device_id = data['device_id']
+        device_id = data.get('device_id', None)
 
-        if not Device.objects.filter(device_id=device_id).exists():
+        if device_id and not Device.objects.filter(device_id=device_id).exists():
             device = CloudCredentials.objects.cloud_service().device(device_id)
             if device is None:
                 self.add_error('device_id', 'This device id is invalid.')

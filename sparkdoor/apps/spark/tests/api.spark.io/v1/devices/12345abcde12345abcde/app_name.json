@@ -1,0 +1,11 @@
+{
+    "name": "app_name",
+    "cmd": "VarReturn",
+    "result": "an_app",
+    "coreInfo": {
+        "last_heard": null,
+        "connected": true, 
+        "last_app": "", 
+        "deviceID": "12345abcde12345abcde"
+    }
+}

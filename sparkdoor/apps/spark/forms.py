@@ -3,7 +3,8 @@ forms.py - form classes for the `common` app.
 """
 from django.forms import ModelForm
 
-from sparkdoor.apps.spark.models import CloudCredentials, Device
+from .services import ServiceError
+from .models import CloudCredentials, Device
 
 
 class RegisterDeviceForm(ModelForm):
@@ -15,21 +16,29 @@ class RegisterDeviceForm(ModelForm):
         model = Device
         fields = ['user', 'device_id', 'name']
 
+    def _get_app_name(self, device):
+        """
+        Attempt to get the `app_name` variable from a cloud device.
+        """
+        try:
+            return device.read('app_name')
+        except ServiceError:
+            self.add_error('device_id', 'This device could not be reached.')
+        return None
+
     def clean(self):
         """
         Validate that the `device_id` is correct by first looking for
         Devices with this id in the database and then by attempting to
         read the `app_name` variable.
-
-        If the form isn't valid, then there's no point in running these
-        checks so just return.
         """
         data = super(RegisterDeviceForm, self).clean()
         device_id = data['device_id']
-        # Don't bother checking with the cloud if this device id is
-        # already stored.
+
         if not Device.objects.filter(device_id=device_id).exists():
             device = CloudCredentials.objects.cloud_service().device(device_id)
             if device is None:
                 self.add_error('device_id', 'This device id is invalid.')
+            else:
+                data['app_name'] = self._get_app_name(device)
         return data

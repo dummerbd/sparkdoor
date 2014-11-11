@@ -5,10 +5,10 @@ from django.test import TestCase, override_settings
 
 from sparkdoor.libs.httmock import HTTMock
 from sparkdoor.libs.factories import UserFactory
-from sparkdoor.apps.spark.services import SparkCloud
-from sparkdoor.apps.spark.tests.mocks import spark_cloud_mock, ACCESS_TOKEN
-from sparkdoor.apps.spark.tests.factories import CloudCredentialsFactory, DeviceFactory
 
+from .mocks import spark_cloud_mock, ACCESS_TOKEN
+from .factories import CloudCredentialsFactory, DeviceFactory
+from ..services import SparkCloud, ServiceError
 from .. import forms
 
 
@@ -35,6 +35,8 @@ class RegisterDeviceFormTestCase(TestCase):
         cls.user = UserFactory.create()
         cls.device = DeviceFactory.create(user=cls.user, name='taken', device_id='123')
         cls.cred = CloudCredentialsFactory.create(access_token=ACCESS_TOKEN)
+        with HTTMock(spark_cloud_mock):
+            cls.cloud_device = SparkCloud(cls.api_uri, ACCESS_TOKEN).all_devices()[0]
 
     @classmethod
     def tearDownClass(cls):
@@ -69,12 +71,33 @@ class RegisterDeviceFormTestCase(TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn('device_id', errors.keys())
 
+    def test_unreachable_device(self):
+        """
+        Test that an unconnected device (which will raise a ServiceError)
+        adds an error to the `device_id` field.
+        """
+        data = { 'user': self.user.id, 'device_id': self.cloud_device.id, 'name': 'new' }
+        real_device_read = self.cloud_device.read
+        def fake_device_read(var):
+            raise ServiceError
+        self.cloud_device.read = fake_device_read
+
+        with HTTMock(spark_cloud_mock):
+            form = self.form_class(data)
+            form._get_app_name(self.cloud_device)
+            errors = form.errors.as_data()
+        self.assertEqual(len(errors), 1)
+        self.assertIn('device_id', errors.keys())
+
+        self.cloud_device.read = real_device_read
+
     def test_good_device_id(self):
         """
         Test that a form with a valid device id is valid.
         """
-        data = { 'user': self.user.id, 'name': 'new' }
+        data = { 'user': self.user.id, 'device_id': self.cloud_device.id, 'name': 'new' }
         with HTTMock(spark_cloud_mock):
-            data['device_id'] = SparkCloud(self.api_uri, ACCESS_TOKEN).all_devices()[0].id
+            expected_app_name = self.cloud_device.read('app_name')
             form = self.form_class(data)
             self.assertTrue(form.is_valid())
+        self.assertEqual(expected_app_name, form.cleaned_data['app_name'])

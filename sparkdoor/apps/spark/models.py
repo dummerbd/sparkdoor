@@ -7,7 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from .services import SparkCloud, CloudDevice
+from .services import SparkCloud, CloudDevice, ServiceError
 from .settings import SparkSettings
 
 
@@ -129,6 +129,7 @@ class Device(models.Model):
     device_id = models.CharField(max_length=250, blank=False, unique=True)
     name = models.CharField(max_length=250, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False)
+    app_name = models.CharField(max_length=100, blank=False, default='default')
 
     objects = DeviceManager()
 
@@ -139,17 +140,23 @@ class Device(models.Model):
         """
         Call a function on this device and return the result which will
         always be an integer for a successful call. An unsuccessful call
-        will raise a `ServiceError`.
+        will return None.
         """
-        return self._cloud_device.call(func_name, func_args)
+        try:
+            return self._cloud_device.call(func_name, func_args)
+        except ServiceError:
+            return None
     call.do_not_call_in_templates = True
 
     def read(self, var_name):
         """
-        Read the value of a variable. An unsuccessful read will raise a
-        `ServiceError`.
+        Read the value of a variable. An unsuccessful read will return
+        None
         """
-        return self._cloud_device.read(var_name)
+        try:
+            return self._cloud_device.read(var_name)
+        except ServiceError:
+            return None
 
     @property
     def variables(self):

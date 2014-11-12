@@ -6,17 +6,36 @@
 
 {% block content %}
 <h1>Your Devices</h1>
-{% for device in devices %}
-<div class="well well-lg">
-  <h4><small class="text-primary">{% bootstrap_icon "hdd" %}</small> {{ device.name }}</h4>
+<div class="row">
+  {% for device in devices %}
+  <div class="col-lg-4 col-md-6 col-sm-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4><small class="text-primary">{% bootstrap_icon "hdd" %}</small> {{ device.name }}</h4>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item">Last opened on 10/12/2014</li>
+        <li class="list-group-item">Some other info</li>
+      </ul>
+      <div class="panel-footer">
+        <div class="btn-group btn-group-justified">
+          <a class="btn btn-primary">Unlock</a>
+          <a class="btn btn-default">Stats</a>
+          <a class="btn btn-default">Share</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="well">
+    <h3><small>{% bootstrap_icon "hdd" %}</small> None yet :(</h3>
+  </div>
+  {% endfor %}
 </div>
-{% empty %}
-<div class="well">
-  <h3><small>{% bootstrap_icon "hdd" %}</small> None yet :(</h3>
-</div>
-{% endfor %}
 <div class="panel panel-default">
-  <div class="panel-heading">Register New Device</div>
+  <div class="panel-heading">
+    <h4><small class="text-primary">{% bootstrap_icon "plus" %}</small> Register New Device</h4>
+  </div>
   <div class="panel-body">
     <form role="form" class="form-horizontal" method="POST">
       {% csrf_token %}

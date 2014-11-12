@@ -1,22 +1,20 @@
 {% extends 'common/base.html' %}
 
-{% load bootstrap %}
+{% load bootstrap3 %}
 
 {% block title %}Devices{% endblock title %}
 
 {% block content %}
-<div class="panel panel-default">
-  <div class="panel-heading">
-    Your devices
-  </div>
-  <div class="panel-body">
-    {% for device in devices %}
-    <p class="panel"><b>{{ device.name }}</b>: {{ device.app_name }}</p>
-    {% empty %}
-    <p class="panel">None yet :(</p>
-    {% endfor %}
-  </div>
+<h1>Your Devices</h1>
+{% for device in devices %}
+<div class="well well-lg">
+  <h4><small class="text-primary">{% bootstrap_icon "hdd" %}</small> {{ device.name }}</h4>
 </div>
+{% empty %}
+<div class="well">
+  <h3><small>{% bootstrap_icon "hdd" %}</small> None yet :(</h3>
+</div>
+{% endfor %}
 <div class="panel panel-default">
   <div class="panel-heading">Register New Device</div>
   <div class="panel-body">

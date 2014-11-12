@@ -1,5 +1,5 @@
 header {
-    background-color: #362C57;
+    background-color: #44D4EB;
     background-image: -webkit-radial-gradient(50% top, rgba(123, 84, 182, .6) 0, rgba(123, 84, 182, 0) 75%), -webkit-radial-gradient(right top, rgba(127, 74, 162, .5) 0, rgba(127, 74, 162, 0) 57%);
     background-size: 100% 1000px;
     background-repeat: no-repeat;
@@ -23,7 +23,7 @@ header {
 .login>a:hover {
     text-decoration: none;
     color: #fff;
-    background-color: #664A8C !important;
+    background-color: #44D4EB !important;
 }
 
 .login>a:active {
@@ -31,15 +31,10 @@ header {
     color: #fff;
 }
 
-
 #wrap {
     min-height: 100%;
     height: auto !important;
 
-}
-
-body {
-    background-color: #fff;
 }
 
 header .navbar {
@@ -68,10 +63,10 @@ header .navbar {
 
 #header {
     font-size: 6em;
-    color: #45BD9A;
+    color: #BCE4EB;
 }
 
-#signup-body {
+.btn-splash {
     margin-top: 10px;
     margin-bottom: 10px;
 }

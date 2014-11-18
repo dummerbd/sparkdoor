@@ -14,7 +14,29 @@ class DeviceAppBase:
     Base class for Spark device apps. This class is responsible for
     rendering a device in the `UserDevicesViewBase` subclasses.
     """
-    pass
+    def __init__(self, device):
+        """
+        Constructor.
+        """
+        self.device = device
+
+    def status(self, name):
+        """
+        Handle a status read.
+        """
+        raise NotImplementedError
+
+    def command(self, cmd):
+        """
+        Handle a command action.
+        """
+        raise NotImplementedError
+
+    def render(self):
+        """
+        Render this device as HTML.
+        """
+        raise NotImplementedError
 
 
 class UserDevicesViewBase(LoginRequiredMixin, FormMessagesMixin, CreateView):

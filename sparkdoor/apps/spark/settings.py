@@ -38,4 +38,4 @@ class SparkSettings:
 
         self.APPS = settings.SPARK.get('APPS', None)
         if self.APPS is None:
-            raise ImproperlyConfigured('The Spark app requires an APPS dictionary mapping an app name to a spark.models.AppBase subclass.')
+            raise ImproperlyConfigured('The Spark app requires an APPS dictionary mapping an app name to a spark.views.DeviceAppBase subclass.')

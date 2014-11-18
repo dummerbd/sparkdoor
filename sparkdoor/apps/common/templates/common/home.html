@@ -6,7 +6,7 @@
   <h2 class="text-center">Its like your door, but smarter</h2>
   <div class="center-block text-center">
     {% if user.is_authenticated %}
-    <a href="{% url 'common:devices' %}" class="btn btn-btn-lg btn-default btn-splash">My Devices</a>
+    <a href="{% url 'common:profile' %}" class="btn btn-btn-lg btn-default btn-splash">My Devices</a>
     {% else %}
     <a href="{% url 'account_signup' %}" class="btn btn-btn-lg btn-default btn-splash">Sign up now</a>
     {% endif %}

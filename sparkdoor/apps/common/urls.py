@@ -14,8 +14,8 @@ urlpatterns = patterns('',
         name='home'
     ),
 
-    url(r'^devices$',
-        views.DevicesView.as_view(),
-        name='devices'
+    url(r'^profile$',
+        views.ProfileView.as_view(),
+        name='profile'
     )
 )

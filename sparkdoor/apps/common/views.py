@@ -3,12 +3,8 @@ views.py - `common` app views module.
 """
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView
 
-from braces.views import LoginRequiredMixin, FormMessagesMixin
-
-from sparkdoor.apps.spark.forms import RegisterDeviceForm
-from sparkdoor.apps.spark.models import Device
+from sparkdoor.apps.spark.views import UserDevicesViewBase
 
 
 class HomeView(TemplateView):
@@ -18,31 +14,10 @@ class HomeView(TemplateView):
     template_name = 'common/home.html'
 
 
-class DevicesView(LoginRequiredMixin, FormMessagesMixin, CreateView):
+class ProfileView(UserDevicesViewBase):
     """
-    Serves as a user profile page, provides a list of devices for the
-    user.
+    The user profile view, which provides a list of the user's devices
+    and a device registration form.
     """
     template_name = 'common/devices.html'
-    form_class = RegisterDeviceForm
-    success_url = reverse_lazy('common:devices')
-    form_invalid_message = 'Could not register device'
-
-    def get_form_valid_message(self):
-        return 'Added {0} device'.format(self.object.name)
-
-    def get_context_data(self, **kwargs):
-        """
-        Add a `devices` entry with available devices.
-        """
-        context = super(DevicesView, self).get_context_data(**kwargs)
-        context['devices'] = Device.objects.for_user(self.request.user).order_by('name')
-        return context
-
-    def post(self, request, *args, **kwargs):
-        """
-        Add the user of this request.
-        """
-        request.POST = request.POST.copy()
-        request.POST['user'] = self.request.user.id
-        return super(DevicesView, self).post(request, *args, **kwargs)
+    success_url = reverse_lazy('common:profile')

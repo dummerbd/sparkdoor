@@ -112,8 +112,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'sparkdoor/static'),
 )
 
-# Redirect login to user devices page
-LOGIN_REDIRECT_URL = '/devices'
+LOGIN_REDIRECT_URL = '/profile'
 SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {

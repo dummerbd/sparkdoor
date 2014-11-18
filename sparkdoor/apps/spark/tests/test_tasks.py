@@ -17,7 +17,8 @@ from ..models import CloudCredentials
 spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
-    'CLOUD_API_URI': 'https://api.test.com'
+    'CLOUD_API_URI': 'https://api.test.com',
+    'APPS': {}
 }
 
 

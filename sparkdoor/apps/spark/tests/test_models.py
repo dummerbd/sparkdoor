@@ -18,7 +18,8 @@ spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
     'CLOUD_API_URI': 'https://api.test.com',
-    'CLOUD_RENEW_TOKEN_WINDOW': 60*60 # 1 hour
+    'CLOUD_RENEW_TOKEN_WINDOW': 60*60, # 1 hour
+    'APPS': {}
 }
 
 

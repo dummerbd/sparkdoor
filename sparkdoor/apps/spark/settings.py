@@ -35,3 +35,7 @@ class SparkSettings:
         self.PASSWORD = settings.SPARK.get('CLOUD_PASSWORD', None)
         if self.PASSWORD is None:
             raise ImproperlyConfigured('The Spark app requires a CLOUD_PASSWORD to be set in the SPARK settings. This should be the password for CLOUD_USERNAME.')
+
+        self.APPS = settings.SPARK.get('APPS', None)
+        if self.APPS is None:
+            raise ImproperlyConfigured('The Spark app requires an APPS dictionary mapping an app name to a spark.models.AppBase subclass.')

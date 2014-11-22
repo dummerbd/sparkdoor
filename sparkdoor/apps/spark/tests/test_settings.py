@@ -44,7 +44,7 @@ class SparkSettingsTestCase(SimpleTestCase):
         self.assertEqual(spark_settings.RENEW_TOKEN_WINDOW,
             DEFAULTS['CLOUD_RENEW_TOKEN_WINDOW'])
 
-    @override_settings(SPARK={'CLOUD_PASSWORD': '...'})
+    @override_settings(SPARK={'CLOUD_PASSWORD': '...', 'APPS': {}})
     def test_cloud_username_must_be_defined(self):
         """
         Test that `SPARK.CLOUD_USERNAME` must be defined.
@@ -53,7 +53,7 @@ class SparkSettingsTestCase(SimpleTestCase):
         with self.assertRaises(ImproperlyConfigured):
             spark_settings = SparkSettings()
 
-    @override_settings(SPARK={'CLOUD_USERNAME': '...'})
+    @override_settings(SPARK={'CLOUD_USERNAME': '...', 'APPS': {}})
     def test_cloud_password_must_be_defined(self):
         """
         Test that `SPARK.CLOUD_PASSWORD` must be defined.
@@ -71,6 +71,16 @@ class SparkSettingsTestCase(SimpleTestCase):
         with self.assertRaises(ImproperlyConfigured):
             spark_settings = SparkSettings()
 
+    @override_settings(
+        SPARK={'CLOUD_USERNAME': '...', 'CLOUD_PASSWORD': '...', 'APPS': {}})
+    def test_default_app_has_default(self):
+        """
+        Test the `SPARK.DEFAULT_APP` defaults properly when not defined.
+        """
+        self.assertIsNone(settings.SPARK.get('DEFAULT_APP', None))
+        spark_settings = SparkSettings()
+        self.assertEqual(spark_settings.DEFAULT_APP, DEFAULTS['DEFAULT_APP'])
+
     def test_settings(self):
         """
         Test that settings in `SPARK` are properly assigned into the
@@ -80,12 +90,15 @@ class SparkSettingsTestCase(SimpleTestCase):
         api_uri = 'http://api.somewhere.com'
         window = 10
         apps = {'some_app', 'some_class'}
+        default_app = 'default_class'
         with self.settings(SPARK={
                 'CLOUD_USERNAME': username, 'CLOUD_PASSWORD': password, 'APPS': apps,
-                'CLOUD_API_URI': api_uri, 'CLOUD_RENEW_TOKEN_WINDOW': window }):
+                'CLOUD_API_URI': api_uri, 'CLOUD_RENEW_TOKEN_WINDOW': window,
+                'DEFAULT_APP': default_app }):
             spark_settings = SparkSettings()
             self.assertEqual(spark_settings.API_URI, api_uri)
             self.assertEqual(spark_settings.RENEW_TOKEN_WINDOW, window)
             self.assertEqual(spark_settings.USERNAME, username)
             self.assertEqual(spark_settings.PASSWORD, password)
             self.assertEqual(spark_settings.APPS, apps)
+            self.assertEqual(spark_settings.DEFAULT_APP, default_app)

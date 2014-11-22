@@ -158,6 +158,14 @@ class Device(models.Model):
         except ServiceError:
             return None
 
+    def get_app(self):
+        """
+        Use the `APPS` entry in the `SPARK` settings to get a
+        `spark.views.DeviceAppBase` subclass for this device.
+        """
+        app_class = SparkSettings().APPS.get(self.app_name, SparkSettings().DEFAULT_APP)
+        return app_class(self)
+
     @property
     def variables(self):
         """

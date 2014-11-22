@@ -12,6 +12,13 @@ from .mocks import spark_cloud_mock, ACCESS_TOKEN
 from .factories import CloudCredentialsFactory, DeviceFactory
 from ..models import CloudCredentials, Device
 from ..services import SparkCloud
+from ..settings import SparkSettings
+
+
+
+class TestApp:
+    def __init__(self, device):
+        pass
 
 
 spark_test_settings = {
@@ -19,7 +26,7 @@ spark_test_settings = {
     'CLOUD_PASSWORD': 'password',
     'CLOUD_API_URI': 'https://api.test.com',
     'CLOUD_RENEW_TOKEN_WINDOW': 60*60, # 1 hour
-    'APPS': {}
+    'APPS': { 'test_app': TestApp }
 }
 
 
@@ -47,7 +54,7 @@ class CloudCredentialsTestCase(TestCase):
         setting.
         """
         now = timezone.now()
-        window = spark_test_settings['CLOUD_RENEW_TOKEN_WINDOW']
+        window = SparkSettings().RENEW_TOKEN_WINDOW
         cur = self.factory.build(access_token='good',
             expires_at=now + timedelta(seconds=window*2))
         exp = self.factory.build(access_token='expired',
@@ -216,6 +223,26 @@ class DeviceTestCase(TestCase):
             for v in self.device.variables.keys():
                 expected = self.cloud_device.read(v)
                 self.assertEqual(self.device.read(v), expected)
+
+    def test_get_app_default_app(self):
+        """
+        Test that the `DEFAULT_APP` is returned when the device's
+        `app_name` is not in `APPS`.
+        """
+        settings = SparkSettings()
+        self.device.app_name = 'not an app'
+        app = self.device.get_app()
+        self.assertIsInstance(app, settings.DEFAULT_APP)
+
+    def test_get_app(self):
+        """
+        Test that the correct app from `APPS` is returned for the 
+        device's `app_name`.
+        """
+        settings = SparkSettings()
+        self.device.app_name = 'test_app'
+        app = self.device.get_app()
+        self.assertIsInstance(app, settings.APPS[self.device.app_name])
 
     def test_variables(self):
         """

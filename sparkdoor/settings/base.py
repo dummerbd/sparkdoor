@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'rest_framework',
     'bootstrap3',
     'bootstrapform',
 
@@ -112,8 +113,16 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'sparkdoor/static'),
 )
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
+}
+
 LOGIN_REDIRECT_URL = '/profile'
+
 SOCIALACCOUNT_QUERY_EMAIL = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
         'SCOPE': ['email', 'publish_stream'],

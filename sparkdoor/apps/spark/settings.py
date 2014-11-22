@@ -28,6 +28,7 @@ class SparkSettings:
             raise ImproperlyConfigured('The Spark app requires a configuration object called SPARK in your settings.')
 
         self.API_URI = settings.SPARK.get('CLOUD_API_URI', DEFAULTS['CLOUD_API_URI'])
+        
         self.RENEW_TOKEN_WINDOW = settings.SPARK.get('CLOUD_RENEW_TOKEN_WINDOW',
             DEFAULTS['CLOUD_RENEW_TOKEN_WINDOW'])
 

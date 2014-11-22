@@ -81,7 +81,7 @@ class APITestMixin(CBVBaseTestMixin):
     """
     request_factory = APIRequestFactory()
 
-    def buildRequest(self, method='GET', path='/test/', user=None,
+    def build_request(self, method='GET', path='/test/', user=None,
             token=None, **kwargs):
         """
         Creates a request using request factory.

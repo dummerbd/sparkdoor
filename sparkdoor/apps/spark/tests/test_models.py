@@ -15,7 +15,6 @@ from ..services import SparkCloud
 from ..settings import SparkSettings
 
 
-
 class TestApp:
     def __init__(self, device):
         pass

@@ -34,6 +34,25 @@ class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         """
         return Device.objects.for_user(self.request.user)
 
+    @property
+    def allowed_methods(self):
+        """
+        Only GET supported on the device list and detail endpoints, only
+        POST supported on the device action endpoint.
+        """
+        return [('POST' if 'action' in self.kwargs else 'GET'), 'OPTIONS', 'HEAD']
+
+    def list(self, request, *args, **kwargs):
+        """
+        Add an `href` entry.
+        """
+        res = super(self.__class__, self).list(request, *args, **kwargs)
+        res.data = {
+            'href': request.build_absolute_uri(request.path),
+            'devices': res.data
+        }
+        return res
+
     def get(self, request, *args, **kwargs):
         """
         If the `lookup_url_kwarg` is passed in `kwargs`, then respond
@@ -41,14 +60,10 @@ class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         """
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         if lookup_url_kwarg in kwargs:
-            res = self.retrieve(request, *args, **kwargs)
-        else:
-            res = self.list(request, *args, **kwargs)
-            res.data = {
-                'href': request.build_absolute_uri(request.path),
-                'devices': res.data
-            }
-        return res
+            if 'action' in kwargs:
+                return response.Response(status=405)
+            return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         """

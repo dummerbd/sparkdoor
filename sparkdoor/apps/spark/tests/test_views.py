@@ -44,12 +44,25 @@ class DeviceAPIViewTestCase(APITestMixin, TestCase):
         cls.user = UserFactory.create()
         cls.device = DeviceFactory.create(user=cls.user, app_name='test_app')
 
+    def test_allowed_methods(self):
+        """
+        Test that `allowed_methods` returns the right methods depending
+        on which endpoint is being viewed.
+        """
+        view = self.view_class()
+        view.kwargs = {}
+        self.assertEqual(view.allowed_methods, ['GET', 'OPTIONS', 'HEAD'])
+        view.kwargs = {'pk': 1}
+        self.assertEqual(view.allowed_methods, ['GET', 'OPTIONS', 'HEAD'])
+        view.kwargs = {'pk': 1, 'action': 'test'}
+        self.assertEqual(view.allowed_methods, ['POST', 'OPTIONS', 'HEAD'])
+
     def test_get_list(self):
         """
         Test that `get` returns a response with a `devices` entry and a
         `self` uri.
         """
-        request = self.build_request(method='GET', path='/test/')
+        request = self.build_request(path='/test/')
         response = self.dispatch_view(request)
         expected_devices = [self.view_class.serializer_class(self.device,
             context={'request': request}).data]
@@ -60,11 +73,18 @@ class DeviceAPIViewTestCase(APITestMixin, TestCase):
         """
         Test that `get` calls `retrieve` when a lookup kwarg is given.
         """
-        request = self.build_request(method='GET', kwargs={'pk': self.device.id})
+        request = self.build_request(kwargs={'pk': self.device.id})
         response = self.dispatch_view(request, kwargs={'pk': self.device.id})
         expected_data = self.view_class.serializer_class(self.device,
             context={'request': request}).data
         self.assertEqual(response.data, expected_data)
+
+    def test_get_action(self):
+        """
+        Test that `get` returns a 405 when an `action` kwarg is given.
+        """
+        response = self.send_request_to_view(kwargs={'pk': 0, 'action': 'test'})
+        self.assertEqual(response.status_code, 405)
 
     def test_post_no_pk(self):
         """

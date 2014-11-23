@@ -15,4 +15,4 @@ class DoorApp(DeviceAppBase):
         """
         Handle an action request.
         """
-        pass
+        return args

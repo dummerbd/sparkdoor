@@ -23,7 +23,9 @@ class DeviceSerializer(serializers.ModelSerializer):
         """
         Get the `uri` for this device.
         """
-        return reverse('devices-detail', kwargs={'pk': obj.id},
+        if obj.id is None:
+            return ''
+        return reverse('devices-detail', kwargs={'pk': obj.id}, 
             request=self.context['request'])
 
     def get_actions(self, obj):

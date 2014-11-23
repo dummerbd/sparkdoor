@@ -1,7 +1,6 @@
 """
 views.py - `spark` app views module.
 """
-from django.http import Http404
 from django.views.generic.edit import CreateView
 
 from braces.views import LoginRequiredMixin, FormMessagesMixin
@@ -17,14 +16,14 @@ from .serializers import DeviceSerializer
 class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         generics.GenericAPIView):
     """
-    REST api viewset for the `Device` model:
+    RESTful resource for listing the devices for the current user.
 
     /device/
-        /<lookup_url_kwarg>/
+        /<id>/
             /<action>/
 
     The device list and detail endpoints are read-only for now, while
-    the action endpoint is post-only and delegates to the device's app.
+    the action endpoint is write-only and delegates to the device's app.
     """
     serializer_class = DeviceSerializer
     permission_classes = (IsAuthenticated,)
@@ -42,8 +41,14 @@ class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         """
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         if lookup_url_kwarg in kwargs:
-            return self.retrieve(request, *args, **kwargs)
-        return self.list(request, *args, **kwargs)
+            res = self.retrieve(request, *args, **kwargs)
+        else:
+            res = self.list(request, *args, **kwargs)
+            res.data = {
+                'href': request.build_absolute_uri(request.path),
+                'devices': res.data
+            }
+        return res
 
     def post(self, request, *args, **kwargs):
         """
@@ -51,15 +56,19 @@ class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         An additional `action` url kwarg must be specified to know which
         action to perform.
 
-        A 404 is raised if `action` is not specified (indicating a post 
-        to the detail or list endpoints) or if it is not in the
-        `action_names` attribute.
+        A 405 is raised if `action` or `pk` is not specified (indicating
+        a post to the detail or list endpoints). A 404 is raised if
+        `action` is not in the `action_names` attribute.
         """
-        instance = self.get_object()
-        action = kwargs.get('action', None)
-        app = instance.get_app()
-        if action is None or action not in app.get_action_names():
-            raise Http404
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        if lookup_url_kwarg not in kwargs or 'action' not in kwargs:
+            return response.Response(status=405)
+
+        action = kwargs['action']
+        app = self.get_object().get_app()
+        if action not in app.get_action_names():
+            return response.Response(status=404)
+
         return response.Response(data=app.action(action, request.DATA), status=200)
 
 

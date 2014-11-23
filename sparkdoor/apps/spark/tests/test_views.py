@@ -2,8 +2,6 @@
 test_views.py - test cases for the `spark` app's view module.
 """
 from django.test import TestCase, override_settings
-from django.http import Http404
-from django.core.exceptions import ImproperlyConfigured
 
 from rest_framework.response import Response
 
@@ -48,47 +46,46 @@ class DeviceAPIViewTestCase(APITestMixin, TestCase):
 
     def test_get_list(self):
         """
-        Test that `get` calls `list` when a lookup kwarg is not given.
+        Test that `get` returns a response with a `devices` entry and a
+        `self` uri.
         """
-        class TestView(self.view_class):
-            def list(self, *args, **kwargs):
-                return Response('list data')
-
-        response = self.send_request_to_view(method='GET', view_class=TestView)
-        self.assertEqual(response.data, 'list data')
+        request = self.build_request(method='GET', path='/test/')
+        response = self.dispatch_view(request)
+        expected_devices = [self.view_class.serializer_class(self.device,
+            context={'request': request}).data]
+        self.assertEqual(response.data['devices'], expected_devices)
+        self.assertEqual(response.data['href'], 'http://testserver/test/')
 
     def test_get_retrieve(self):
         """
         Test that `get` calls `retrieve` when a lookup kwarg is given.
         """
-        class TestView(self.view_class):
-            def retrieve(self, *args, **kwargs):
-                return Response('object data')
-
-        response = self.send_request_to_view(method='GET', view_class=TestView, 
-            kwargs={'pk': self.device.id})
-        self.assertEqual(response.data, 'object data')
+        request = self.build_request(method='GET', kwargs={'pk': self.device.id})
+        response = self.dispatch_view(request, kwargs={'pk': self.device.id})
+        expected_data = self.view_class.serializer_class(self.device,
+            context={'request': request}).data
+        self.assertEqual(response.data, expected_data)
 
     def test_post_no_pk(self):
         """
-        Test that `post` raises ImproperlyConfigured when the `pk` kwarg
-        isn't specified.
+        Test that `post` returns a 405 when the `pk` kwarg isn't
+        specified.
         """
-        with self.assertRaises(ImproperlyConfigured):
-            self.send_request_to_view(method='POST', kwargs={})
+        response = self.send_request_to_view(method='POST', kwargs={})
+        self.assertEqual(response.status_code, 405)
 
     def test_post_no_action(self):
         """
-        Test that `post` raises a 404 when the `action` kwarg isn't
+        Test that `post` returns a 405 when the `action` kwarg isn't
         specified.
         """
         response = self.send_request_to_view(method='POST',
             kwargs={'pk': self.device.id})
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 405)
 
     def test_post_invalid_action(self):
         """
-        Test that `post` raises a 404 when the `action` kwarg is not in
+        Test that `post` eturns a 404 when the `action` kwarg is not in
         the app's `action_names` attribute.
         """
         response = self.send_request_to_view(method='POST',

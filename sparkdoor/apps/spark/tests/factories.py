@@ -33,3 +33,4 @@ class DeviceFactory(factory.django.DjangoModelFactory):
     device_id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'device-{0}'.format(n))
     user = factory.SubFactory(UserFactory)
+    app_name = factory.Sequence(lambda n: 'app-{0}'.format(n))

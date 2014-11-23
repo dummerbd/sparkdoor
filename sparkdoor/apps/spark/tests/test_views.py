@@ -134,11 +134,10 @@ class UserDevicesViewBaseTestCase(ViewsTestMixin, TestCase):
         """
         Test that the `context` includes a `devices` entry.
         """
-        response = self.send_request_to_view()
-        context = response.context_data
-        expected_devices = models.Device.objects.for_user(self.user).order_by('name')
-        for i, device in enumerate(expected_devices):
-            self.assertEqual(device.id, context['devices'][i].id)
+        request = self.build_request(method='GET', path='/test/')
+        response = self.dispatch_view(request)
+        expected_devices = [d.get_app().render(request) for d in self.devices]
+        self.assertEqual(expected_devices, response.context_data['devices'])
 
     def test_post(self):
         """

@@ -1,11 +1,16 @@
 """
-apps.py - `spark` app apps module.
+apps.py - contains classes for building device apps, which are the
+    server side counterpart to device firmware.
 """
+from django.template.loader import render_to_string
+from django.template import RequestContext
+
+
 class DeviceAppBase:
     """
     Base class for Spark device apps. This class is responsible for
     rendering a device in the `UserDevicesViewBase` subclasses and for
-    handling `command` and `status` requests.
+    handling `action` requests.
 
     This class serves as the server side counterpart to the firmware
     running on your spark devices. A `spark.models.Device` instance is
@@ -38,11 +43,19 @@ class DeviceAppBase:
         """
         raise NotImplementedError
 
-    def render(self):
+    def get_context_data(self):
+        """
+        Get the context data for rendering this app's template.
+        """
+        return {'device': self.device}
+
+    def render(self, request):
         """
         Render this device as HTML.
         """
-        raise NotImplementedError
+        self.request = request
+        context = RequestContext(request, self.get_context_data())
+        return render_to_string(self.template_name, context_instance=context)
 
 
 class DefaultDeviceApp(DeviceAppBase):
@@ -50,4 +63,17 @@ class DefaultDeviceApp(DeviceAppBase):
     This class does not provide any functionality, it is used if a
     device is registered that has an `app_name` that is not recognized.
     """
-    pass
+    action_names = []
+
+    def action(self, name, args=None):
+        """
+        Do nothing.
+        """
+        pass
+
+    def render(self, request):
+        """
+        Render this device as HTML.
+        """
+        return '<p>App: {0}<br>Name: {1}</p>'.format(self.device.app_name,
+            self.device.name)

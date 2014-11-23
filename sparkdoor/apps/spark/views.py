@@ -88,6 +88,9 @@ class UserDevicesViewBase(LoginRequiredMixin, FormMessagesMixin, CreateView):
     form_invalid_message = 'Could not register device'
 
     def get_form_valid_message(self):
+        """
+        Get the message to display on successfully registering a device.
+        """
         return 'Added {0} device'.format(self.object.name)
 
     def get_context_data(self, **kwargs):
@@ -95,7 +98,8 @@ class UserDevicesViewBase(LoginRequiredMixin, FormMessagesMixin, CreateView):
         Add a `devices` entry with available devices.
         """
         context = super(UserDevicesViewBase, self).get_context_data(**kwargs)
-        context['devices'] = Device.objects.for_user(self.request.user).order_by('name')
+        devices = Device.objects.for_user(self.request.user).order_by('name')
+        context['devices'] = [d.get_app().render(self.request) for d in devices]
         return context
 
     def post(self, request, *args, **kwargs):

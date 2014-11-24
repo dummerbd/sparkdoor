@@ -1,8 +1,13 @@
 {% extends 'common/base.html' %}
 
 {% load bootstrap3 %}
+{% load static %}
 
 {% block title %}Devices{% endblock title %}
+
+{% block head_js %}
+  <script src="{% static 'js/qrcode.min.js' %}"></script>
+{% endblock head_js %} 
 
 {% block content %}
 <h1>Your Devices</h1>
@@ -32,11 +37,17 @@
       <div class="form-group {% if form.device_id.errors %}has-error{% endif %}">
         <label for="id_device_id" class="col-sm-2 control-label">ID</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="id_device_id" name="device_id" placeholder="Enter your device ID">
-          {{ form.device_id.errors|first }}
+          <div class="input-group">
+            <input id="device_id" type="text" class="form-control" id="id_device_id" name="device_id" placeholder="Enter your device ID">
+            {{ form.device_id.errors|first }}
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" id="qr-btn">QR</button>
+            </span>
+          </div>
         </div>
       </div>
-      <div class="form-group">
+      <div id="reader" style="width:300px;height:250px;display:none"></div>
+      <div class="form-group" id="submit-div">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-primary">Register</button>
         </div>
@@ -45,3 +56,32 @@
   </div>
 </div>
 {% endblock content %}
+
+{% block body_js %}
+<script>
+$(document).ready(function() {
+  if ((typeof window === 'undefined') || (typeof navigator === 'undefined')) {
+    log('This page needs a Web browser with the objects window.* and navigator.*!');
+    $('#qr-btn').prop('disabled', true);
+  }
+  else
+  {
+    $('#qr-btn').on('click', function() {
+      $("#reader").show();
+    });
+    $('#device_id').on('change', function() {
+      $("#reader").hide();
+    });
+    $('#reader').html5_qrcode(function(data){
+      $('#device_id').val(data);
+      $("#reader").hide();
+    },
+    function(error){
+        //show read errors 
+    }, function(videoError){
+        //the video stream could be opened
+    });
+  }
+});
+</script>
+{% endblock body_js %}

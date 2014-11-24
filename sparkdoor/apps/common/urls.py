@@ -13,6 +13,10 @@ urlpatterns = patterns('',
         name='profile'
     ),
 
+    url(r'^qrcode$',
+    	views.QrcodeView.as_view(),
+    	name='qrcode'
+    ),
     # this needs to be last:
     url(r'^$',
         views.HomeView.as_view(),

@@ -9,17 +9,23 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+
+    url(r'^api/',
+        include('sparkdoor.apps.spark.urls')
+    ),
+
     url(r'^admin/',
         include(admin.site.urls)
+    ),
+
+    url(r'^accounts/',
+        include('allauth.urls')
     ),
 
     # this needs to be last:
     url(r'^',
         include('sparkdoor.apps.common.urls', namespace='common')
-    ),
-
-    # allauth
-    (r'^accounts/', include('allauth.urls')),
+    )
 )
 
 if settings.DEBUG:
@@ -27,5 +33,5 @@ if settings.DEBUG:
     urlpatterns += patterns('',
         url(r'^__debug_toolbar__/',
             include(debug_toolbar.urls)
-        ),
+        )
     )

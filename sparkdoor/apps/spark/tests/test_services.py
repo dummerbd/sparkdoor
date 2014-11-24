@@ -14,7 +14,8 @@ from ..services import SparkCloud, CloudDevice, ServiceError
 spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
-    'CLOUD_API_URI': 'https://api.test.com'
+    'CLOUD_API_URI': 'https://api.test.com',
+    'APPS': {}
 }
 
 
@@ -89,28 +90,59 @@ class SparkCloudTestCase(SimpleTestCase):
         self.assertIsNone(token)
         self.assertIsNone(expires)
 
-    def test_devices(self):
+    def test_all_devices(self):
         """
-        Test that `devices` returns a list of available `CloudDevice` 
+        Test that `all_devices` returns a list of available `CloudDevice` 
         instances.
         """
         with HTTMock(spark_cloud_mock):
             cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
-            devices = cloud.devices
+            devices = cloud.all_devices()
         self.assertIsInstance(devices, list)
         self.assertTrue(len(devices) > 0)
         for d in devices:
             self.assertIsInstance(d, CloudDevice)
             self.assertEqual(cloud, d.cloud)
 
-    def test_devices_with_invalid_access_token(self):
+    def test_all_devices_with_invalid_access_token(self):
         """
-        Test that `devices` returns an empty list when an invalid
+        Test that `all_devices` returns an empty list when an invalid
         access token is used.
         """
         with HTTMock(spark_cloud_mock):
-            devices = SparkCloud(self.API_URI, 'invalid_token').devices
+            cloud = SparkCloud(self.API_URI, 'invalid_token')
+            devices = cloud.all_devices()
         self.assertEqual(devices, [])
+
+    def test_device_with_invalid_access_token(self):
+        """
+        Test that `device` returns None when an invalid access token is
+        used.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, 'invalid_token')
+            device = cloud.device('123')
+        self.assertIsNone(device)
+
+    def test_device_with_nonexistant_device_id(self):
+        """
+        Test that `device` returns None when an invalid access token is
+        used.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
+            device = cloud.device('not_a_device_id')
+        self.assertIsNone(device)
+
+    def test_device(self):
+        """
+        Test that `device` returns a new `CloudDevice`.
+        """
+        with HTTMock(spark_cloud_mock):
+            cloud = SparkCloud(self.API_URI, ACCESS_TOKEN)
+            device_id = cloud.all_devices()[0].id
+            device = cloud.device(device_id)
+        self.assertIsInstance(device, CloudDevice)
 
 
 @override_settings(SPARK=spark_test_settings)
@@ -131,7 +163,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         names.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             self.assertIsNotNone(device.functions)
 
     def test_variables(self):
@@ -140,7 +172,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         a variable type.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             for var_name, var_type in device.variables.items():
                 self.assertIsInstance(var_name, str)
                 self.assertIn(var_type, ['int32', 'double', 'string'])
@@ -151,7 +183,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         function name is used.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             with self.assertRaises(ServiceError):
                 ret = device.call('not_a_function', 'some args')
 
@@ -160,7 +192,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         Test that `call` returns an int after a successful call.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             func_name = device.functions[0]
             ret = device.call(func_name, 'some args')
         self.assertIsInstance(ret, int)
@@ -171,7 +203,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         variable name is used.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             with self.assertRaises(ServiceError):
                 ret = device.read('not_a_variable')
 
@@ -180,7 +212,7 @@ class CloudDeviceTestCase(SimpleTestCase):
         Test that `read` returns either an `int`, `float`, or `string`.
         """
         with HTTMock(spark_cloud_mock):
-            device = SparkCloud(self.API_URI, ACCESS_TOKEN).devices[0]
+            device = SparkCloud(self.API_URI, ACCESS_TOKEN).all_devices()[0]
             for name in device.variables.keys():
                 val = device.read(name)
                 self.assertIsInstance(val, (int, float, str))

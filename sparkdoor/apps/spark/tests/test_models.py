@@ -12,13 +12,20 @@ from .mocks import spark_cloud_mock, ACCESS_TOKEN
 from .factories import CloudCredentialsFactory, DeviceFactory
 from ..models import CloudCredentials, Device
 from ..services import SparkCloud
+from ..settings import SparkSettings
+
+
+class TestApp:
+    def __init__(self, device):
+        pass
 
 
 spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
     'CLOUD_API_URI': 'https://api.test.com',
-    'CLOUD_RENEW_TOKEN_WINDOW': 60*60 # 1 hour
+    'CLOUD_RENEW_TOKEN_WINDOW': 60*60, # 1 hour
+    'APPS': { 'test_app': TestApp }
 }
 
 
@@ -46,7 +53,7 @@ class CloudCredentialsTestCase(TestCase):
         setting.
         """
         now = timezone.now()
-        window = spark_test_settings['CLOUD_RENEW_TOKEN_WINDOW']
+        window = SparkSettings().RENEW_TOKEN_WINDOW
         cur = self.factory.build(access_token='good',
             expires_at=now + timedelta(seconds=window*2))
         exp = self.factory.build(access_token='expired',
@@ -54,37 +61,47 @@ class CloudCredentialsTestCase(TestCase):
         self.assertFalse(cur.expires_soon())
         self.assertTrue(exp.expires_soon())
 
+    def test_cloud_service(self):
+        """
+        Test that `cloud_service` returns an initialized `SparkCloud`.
+        """
+        cur = self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
+        with HTTMock(spark_cloud_mock):
+            cloud = CloudCredentials.objects.cloud_service()
+        self.assertEqual(cloud.access_token, ACCESS_TOKEN)
+        cur.delete()
+
     def test_access_token(self):
         """
-        Test that `access_token` returns the most recent token that
+        Test that `_access_token` returns the most recent token that
         is not expired.
         """
         exp = self.factory.create(access_token='expired', expires_at=self.expired_dt)
         cur = self.factory.create(access_token=ACCESS_TOKEN, expires_at=self.current_dt)
         old = self.factory.create(access_token='old', expires_at=self.old_dt)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_access_token_empty(self):
         """
-        Test that `access_token` returns None if there isn't any saved
+        Test that `_access_token` returns None if there isn't any saved
         credentials.
         """
         self.assertEqual(CloudCredentials.objects.count(), 0)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, None)
 
     def test_access_token_all_expired(self):
         """
-        Test that `access_token` returns None if all the stored tokens
+        Test that `_access_token` returns None if all the stored tokens
         are expired.
         """
         exp = self.factory.create(access_token='expired', expires_at=self.expired_dt)
         with HTTMock(spark_cloud_mock):
-            token = CloudCredentials.objects.access_token()
+            token = CloudCredentials.objects._access_token()
         self.assertEqual(token, None)
         exp.delete()
 
@@ -96,7 +113,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             CloudCredentials.objects.refresh_token()
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_renew_token(self):
@@ -107,7 +124,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             CloudCredentials.objects._renew_token(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()
 
     def test_discover_tokens(self):
@@ -119,7 +136,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
 
     def test_discover_tokens_existing_token(self):
         """
@@ -131,7 +148,7 @@ class CloudCredentialsTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             found = CloudCredentials.objects._discover_tokens(self.cloud)
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
 
 
 @override_settings(SPARK=spark_test_settings)
@@ -148,7 +165,7 @@ class DeviceTestCase(TestCase):
             expires_at=timezone.now() + timedelta(days=90))
         cls.cloud = SparkCloud(spark_test_settings['CLOUD_API_URI'], ACCESS_TOKEN)
         with HTTMock(spark_cloud_mock):
-            cls.cloud_device = cls.cloud.devices[0]
+            cls.cloud_device = cls.cloud.all_devices()[0]
         cls.device = DeviceFactory.create(device_id=cls.cloud_device.id)
         cls.user = cls.device.user
         cls.extras = [DeviceFactory.create() for _ in range(3)]
@@ -205,6 +222,26 @@ class DeviceTestCase(TestCase):
             for v in self.device.variables.keys():
                 expected = self.cloud_device.read(v)
                 self.assertEqual(self.device.read(v), expected)
+
+    def test_get_app_default_app(self):
+        """
+        Test that the `DEFAULT_APP` is returned when the device's
+        `app_name` is not in `APPS`.
+        """
+        settings = SparkSettings()
+        self.device.app_name = 'not an app'
+        app = self.device.get_app()
+        self.assertIsInstance(app, settings.DEFAULT_APP)
+
+    def test_get_app(self):
+        """
+        Test that the correct app from `APPS` is returned for the 
+        device's `app_name`.
+        """
+        settings = SparkSettings()
+        self.device.app_name = 'test_app'
+        app = self.device.get_app()
+        self.assertIsInstance(app, settings.APPS[self.device.app_name])
 
     def test_variables(self):
         """

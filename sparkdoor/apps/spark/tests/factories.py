@@ -1,6 +1,10 @@
 """
 factories.py - factory classes for the `spark` app's models.
 """
+from datetime import timedelta
+
+from django.utils import timezone
+
 import factory
 
 from sparkdoor.libs.factories import UserFactory
@@ -16,7 +20,7 @@ class CloudCredentialsFactory(factory.django.DjangoModelFactory):
         model = CloudCredentials
 
     access_token = None
-    expires_at = None
+    expires_at = timezone.now() + timedelta(days=90)
 
 
 class DeviceFactory(factory.django.DjangoModelFactory):
@@ -29,3 +33,4 @@ class DeviceFactory(factory.django.DjangoModelFactory):
     device_id = factory.Sequence(lambda n: n)
     name = factory.Sequence(lambda n: 'device-{0}'.format(n))
     user = factory.SubFactory(UserFactory)
+    app_name = factory.Sequence(lambda n: 'app-{0}'.format(n))

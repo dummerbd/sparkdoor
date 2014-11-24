@@ -17,7 +17,8 @@ from ..models import CloudCredentials
 spark_test_settings = {
     'CLOUD_USERNAME': 'a_user',
     'CLOUD_PASSWORD': 'password',
-    'CLOUD_API_URI': 'https://api.test.com'
+    'CLOUD_API_URI': 'https://api.test.com',
+    'APPS': {}
 }
 
 
@@ -46,7 +47,7 @@ class RefreshAccessTokenTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             refresh_access_token()
         self.assertEqual(CloudCredentials.objects.count(), 1)
-        self.assertEqual(CloudCredentials.objects.access_token(), 'good_token')
+        self.assertEqual(CloudCredentials.objects._access_token(), 'good_token')
         cred.delete()
 
     def test_renews_token(self):
@@ -58,5 +59,5 @@ class RefreshAccessTokenTestCase(TestCase):
         with HTTMock(spark_cloud_mock):
             refresh_access_token()
         self.assertEqual(CloudCredentials.objects.count(), 2)
-        self.assertEqual(CloudCredentials.objects.access_token(), ACCESS_TOKEN)
+        self.assertEqual(CloudCredentials.objects._access_token(), ACCESS_TOKEN)
         CloudCredentials.objects.all().delete()

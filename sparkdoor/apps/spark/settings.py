@@ -4,8 +4,11 @@ settings.py - module for loading settings for the `spark` app.
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
+from .apps import DefaultDeviceApp
+
 
 DEFAULTS = {
+    'DEFAULT_APP': DefaultDeviceApp,
     'CLOUD_API_URI': 'https://api.spark.io',
     'CLOUD_RENEW_TOKEN_WINDOW': 60*60*24 # 24 hours
 }
@@ -25,6 +28,7 @@ class SparkSettings:
             raise ImproperlyConfigured('The Spark app requires a configuration object called SPARK in your settings.')
 
         self.API_URI = settings.SPARK.get('CLOUD_API_URI', DEFAULTS['CLOUD_API_URI'])
+        
         self.RENEW_TOKEN_WINDOW = settings.SPARK.get('CLOUD_RENEW_TOKEN_WINDOW',
             DEFAULTS['CLOUD_RENEW_TOKEN_WINDOW'])
 
@@ -35,3 +39,9 @@ class SparkSettings:
         self.PASSWORD = settings.SPARK.get('CLOUD_PASSWORD', None)
         if self.PASSWORD is None:
             raise ImproperlyConfigured('The Spark app requires a CLOUD_PASSWORD to be set in the SPARK settings. This should be the password for CLOUD_USERNAME.')
+
+        self.APPS = settings.SPARK.get('APPS', None)
+        if self.APPS is None:
+            raise ImproperlyConfigured('The Spark app requires an APPS dictionary mapping an app name to a spark.views.DeviceAppBase subclass.')
+
+        self.DEFAULT_APP = settings.SPARK.get('DEFAULT_APP', DEFAULTS['DEFAULT_APP'])

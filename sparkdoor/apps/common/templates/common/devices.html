@@ -1,0 +1,47 @@
+{% extends 'common/base.html' %}
+
+{% load bootstrap3 %}
+
+{% block title %}Devices{% endblock title %}
+
+{% block content %}
+<h1>Your Devices</h1>
+<div class="row">
+  {% for device in devices %}
+    <div class="col-lg-4 col-md-6 col-sm-12">{{ device }}</div>
+  {% empty %}
+  <div class="well">
+    <h3><small>{% bootstrap_icon "hdd" %}</small> None yet :(</h3>
+  </div>
+  {% endfor %}
+</div>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4><small class="text-primary">{% bootstrap_icon "plus" %}</small> Register New Device</h4>
+  </div>
+  <div class="panel-body">
+    <form role="form" class="form-horizontal" method="POST">
+      {% csrf_token %}
+      <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+        <label for="id_name" class="col-sm-2 control-label">Name</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="id_name" name="name" placeholder="Give your device a name!">
+          {{ form.name.errors|first }}
+        </div>
+      </div>
+      <div class="form-group {% if form.device_id.errors %}has-error{% endif %}">
+        <label for="id_device_id" class="col-sm-2 control-label">ID</label>
+        <div class="col-sm-10">
+          <input type="text" class="form-control" id="id_device_id" name="device_id" placeholder="Enter your device ID">
+          {{ form.device_id.errors|first }}
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-primary">Register</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

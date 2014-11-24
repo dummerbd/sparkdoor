@@ -31,6 +31,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'rest_framework',
     'bootstrap3',
     'bootstrapform',
 
@@ -112,9 +113,16 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'sparkdoor/static'),
 )
 
-# Redirect login to home page
-LOGIN_REDIRECT_URL = '/'
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ]
+}
+
+LOGIN_REDIRECT_URL = '/profile'
+
 SOCIALACCOUNT_QUERY_EMAIL = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
         'SCOPE': ['email', 'publish_stream'],
@@ -203,7 +211,11 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Spark cloud settings
+from sparkdoor.apps.common.apps import DoorApp
 SPARK = {
     'CLOUD_USERNAME': get_env_or_error('SPARK_CLOUD_USERNAME', 'should be set to the login for a spark cloud service.'),
-    'CLOUD_PASSWORD': get_env_or_error('SPARK_CLOUD_PASSWORD', 'should be set to the password for SPARK_CLOUD_USERNAME.')
+    'CLOUD_PASSWORD': get_env_or_error('SPARK_CLOUD_PASSWORD', 'should be set to the password for SPARK_CLOUD_USERNAME.'),
+    'APPS': {
+        'door': DoorApp
+    }
 }

@@ -7,7 +7,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
-from .services import SparkCloud, CloudDevice
+from .services import SparkCloud, CloudDevice, ServiceError
 from .settings import SparkSettings
 
 
@@ -15,7 +15,17 @@ class CloudCredentialsManager(models.Manager):
     """
     Custom model manager for `CloudCredentials`.
     """
-    def access_token(self):
+    def cloud_service(self):
+        """
+        Get a cloud service instance initialized with the most current
+        credentials.
+        """
+        latest = self._latest()
+        if latest is None:
+            return None
+        return SparkCloud(SparkSettings().API_URI, latest.access_token)
+
+    def _access_token(self):
         """
         Get the most recent valid `access_token`, if one isn't found
         then None is returned.
@@ -28,14 +38,14 @@ class CloudCredentialsManager(models.Manager):
     def refresh_token(self):
         """
         Check if the access token will expire soon, if so then attempt
-        to find any existed tokens on the cloud account. If no existing
+        to find any existing tokens on the cloud account. If no existing
         tokens are found then a new one will be requested.
         """
         latest = self._latest()
         if latest is None or latest.expires_soon():
             cloud = SparkCloud(SparkSettings().API_URI)
             self._discover_tokens(cloud)
-            if self.access_token() is None:
+            if self._access_token() is None:
                 self._renew_token(cloud)
 
     def _renew_token(self, cloud):
@@ -119,6 +129,7 @@ class Device(models.Model):
     device_id = models.CharField(max_length=250, blank=False, unique=True)
     name = models.CharField(max_length=250, blank=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=False)
+    app_name = models.CharField(max_length=100, blank=False, default='default')
 
     objects = DeviceManager()
 
@@ -129,17 +140,31 @@ class Device(models.Model):
         """
         Call a function on this device and return the result which will
         always be an integer for a successful call. An unsuccessful call
-        will raise a `ServiceError`.
+        will return None.
         """
-        return self._cloud_device.call(func_name, func_args)
+        try:
+            return self._cloud_device.call(func_name, func_args)
+        except ServiceError:
+            return None
     call.do_not_call_in_templates = True
 
     def read(self, var_name):
         """
-        Read the value of a variable. An unsuccessful read will raise a
-        `ServiceError`.
+        Read the value of a variable. An unsuccessful read will return
+        None
         """
-        return self._cloud_device.read(var_name)
+        try:
+            return self._cloud_device.read(var_name)
+        except ServiceError:
+            return None
+
+    def get_app(self):
+        """
+        Use the `APPS` entry in the `SPARK` settings to get a
+        `spark.views.DeviceAppBase` subclass for this device.
+        """
+        app_class = SparkSettings().APPS.get(self.app_name, SparkSettings().DEFAULT_APP)
+        return app_class(self)
 
     @property
     def variables(self):
@@ -162,6 +187,6 @@ class Device(models.Model):
         Get a `CloudDevice` instance from the Spark cloud and cache it.
         """
         if not hasattr(self, '_cached_cloud_device'):
-            cloud = SparkCloud(SparkSettings().API_URI, CloudCredentials.objects.access_token())
-            self._cached_cloud_device = CloudDevice(cloud, id=self.device_id)
+            cloud = CloudCredentials.objects.cloud_service()
+            self._cached_cloud_device = cloud.device(self.device_id)
         return self._cached_cloud_device

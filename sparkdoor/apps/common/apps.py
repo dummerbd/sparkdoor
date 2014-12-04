@@ -1,7 +1,8 @@
 """
 apps.py - contains server side counterparts to device firmware.
 """
-from sparkdoor.apps.spark.apps import DeviceAppBase
+from sparkdoor.apps.spark.apps import DeviceAppBase, DeviceAppError
+from sparkdoor.apps.spark.services import ServiceError
 
 
 class DoorApp(DeviceAppBase):
@@ -22,7 +23,10 @@ class DoorApp(DeviceAppBase):
         """
         Ask the device to open.
         """
-        pass
+        try:
+            self.device.call("open", None)
+        except ServiceError as err:
+            raise DeviceAppError('Device could not be reached', err.status_code)
 
     def invite(self, args):
         """

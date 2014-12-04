@@ -15,7 +15,9 @@ class ServiceError(Exception):
     """
     Generic service error.
     """
-    pass
+    def __init__(self, status_code=500, *args):
+        self.status_code = status_code
+        return super(self.__class__, self).__init__(*args)
 
 
 class SparkCloud:
@@ -141,7 +143,11 @@ class CloudDevice:
         response = self.cloud._service.v1.devices.POST(self.id, func_name,
             data={'access_token':self.cloud.access_token, 'args':func_args})
         if response.ok:
-            return response.json()['return_value']
+            try:
+                return response.json()['return_value']
+            except KeyError:
+                # this typically indicates that the device is not connected.
+                raise ServiceError(504) 
         raise ServiceError(response.status_code)
 
     def read(self, var_name):
@@ -152,7 +158,11 @@ class CloudDevice:
         response = self.cloud._service.v1.devices.GET(self.id, var_name,
             params={'access_token':self.cloud.access_token})
         if response.ok:
-            return response.json()['result']
+            try:
+                return response.json()['result']
+            except KeyError:
+                # this typically indicates that the device is not connected.
+                raise ServiceError(504) 
         raise ServiceError(response.status_code)
 
     @property

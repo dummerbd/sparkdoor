@@ -6,6 +6,16 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 
 
+class DeviceAppError(Exception):
+    """
+    Generic device error that can be raised in the `action` function.
+    """
+    def __init__(self, msg, status_code, *args):
+        self.msg = msg
+        self.status_code = status_code
+        return super(self.__class__, self).__init__(*args)
+
+
 class DeviceAppBase:
     """
     Base class for Spark device apps. This class is responsible for

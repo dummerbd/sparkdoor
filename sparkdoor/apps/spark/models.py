@@ -181,4 +181,6 @@ class Device(models.Model):
         if not hasattr(self, '_cached_cloud_device'):
             cloud = CloudCredentials.objects.cloud_service()
             self._cached_cloud_device = cloud.device(self.device_id)
+        if self._cached_cloud_device is None:
+            raise ServiceError(502)
         return self._cached_cloud_device

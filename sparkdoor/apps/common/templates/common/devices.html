@@ -80,10 +80,14 @@ $(document).ready(function(evt) {
 <h1>Your Devices</h1>
 <div class="row">
   {% for device in devices %}
-    <div class="col-lg-4 col-md-6 col-sm-12">{{ device }}</div>
+  <div class="col-lg-4 col-md-6 col-sm-12">{{ device }}</div>
   {% empty %}
-  <div class="well">
-    <h3><small>{% bootstrap_icon "hdd" %}</small> None yet :(</h3>
+  <div class="col-lg-12">
+    <div class="panel panel-default door-app">
+      <div class="panel-heading">
+        <h4><small class="text-primary">{% bootstrap_icon "hdd" %}</small> None yet :(</h4>
+      </div>
+    </div>
   </div>
   {% endfor %}
 </div>

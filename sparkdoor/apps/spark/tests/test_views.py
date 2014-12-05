@@ -156,7 +156,8 @@ class UserDevicesViewBaseTestCase(ViewsTestMixin, TestCase):
         """
         request = self.build_request(method='GET', path='/test/')
         response = self.dispatch_view(request)
-        expected_devices = [d.get_app().render(request) for d in self.devices]
+        devices = models.Device.objects.for_user(self.user).order_by('name')
+        expected_devices = [d.get_app().render(request) for d in devices]
         self.assertEqual(expected_devices, response.context_data['devices'])
 
     def test_post(self):

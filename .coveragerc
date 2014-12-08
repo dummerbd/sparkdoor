@@ -1,0 +1,11 @@
+[run]
+branch = true
+
+[report]
+omit = 
+    *site-packages*
+    *tests*
+    *__init__.py
+    *migrations*
+    *httmock.py
+show_missing = true

@@ -139,24 +139,16 @@ class Device(models.Model):
     def call(self, func_name, func_args):
         """
         Call a function on this device and return the result which will
-        always be an integer for a successful call. An unsuccessful call
-        will return None.
+        always be an integer for a successfull call.
         """
-        try:
-            return self._cloud_device.call(func_name, func_args)
-        except ServiceError:
-            return None
+        return self._cloud_device.call(func_name, func_args)
     call.do_not_call_in_templates = True
 
     def read(self, var_name):
         """
-        Read the value of a variable. An unsuccessful read will return
-        None
+        Read the value of a variable.
         """
-        try:
-            return self._cloud_device.read(var_name)
-        except ServiceError:
-            return None
+        return self._cloud_device.read(var_name)
 
     def get_app(self):
         """
@@ -189,4 +181,6 @@ class Device(models.Model):
         if not hasattr(self, '_cached_cloud_device'):
             cloud = CloudCredentials.objects.cloud_service()
             self._cached_cloud_device = cloud.device(self.device_id)
+        if self._cached_cloud_device is None:
+            raise ServiceError(502)
         return self._cached_cloud_device

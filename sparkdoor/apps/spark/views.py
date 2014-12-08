@@ -8,6 +8,7 @@ from braces.views import LoginRequiredMixin, FormMessagesMixin
 from rest_framework import generics, mixins, response
 from rest_framework.permissions import IsAuthenticated
 
+from .apps import DeviceAppError
 from .forms import RegisterDeviceForm
 from .models import Device
 from .serializers import DeviceSerializer
@@ -84,7 +85,13 @@ class DeviceAPIView(mixins.RetrieveModelMixin, mixins.ListModelMixin,
         if action not in app.get_action_names():
             return response.Response(status=404)
 
-        return response.Response(data=app.action(action, request.DATA), status=200)
+        status = 200
+        try:
+            data = app.action(action, request.DATA)
+        except DeviceAppError as err:
+            status = err.status_code
+            data = {'detail': err.msg}
+        return response.Response(data=data, status=status)
 
 
 class UserDevicesViewBase(LoginRequiredMixin, FormMessagesMixin, CreateView):

@@ -211,11 +211,10 @@ CELERYBEAT_SCHEDULE = {
 }
 
 # Spark cloud settings
-from sparkdoor.apps.common.apps import DoorApp
 SPARK = {
     'CLOUD_USERNAME': get_env_or_error('SPARK_CLOUD_USERNAME', 'should be set to the login for a spark cloud service.'),
     'CLOUD_PASSWORD': get_env_or_error('SPARK_CLOUD_PASSWORD', 'should be set to the password for SPARK_CLOUD_USERNAME.'),
     'APPS': {
-        'door': DoorApp
+        'door': 'sparkdoor.apps.common.apps.DoorApp'
     }
 }

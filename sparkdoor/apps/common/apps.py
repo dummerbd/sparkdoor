@@ -5,11 +5,14 @@ from sparkdoor.apps.spark.apps import DeviceAppBase, DeviceAppError
 from sparkdoor.apps.spark.services import ServiceError
 
 
+from .models import IDCard
+
+
 class DoorApp(DeviceAppBase):
     """
     Device app for `door` firmware.
     """
-    action_names = ['open', 'invite', 'stats']
+    action_names = ['open']
     template_name = 'common/door_app.html'
 
     def action(self, name, args=None):

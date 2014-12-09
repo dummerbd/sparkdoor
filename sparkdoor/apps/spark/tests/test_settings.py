@@ -5,7 +5,11 @@ from django.test import SimpleTestCase, override_settings
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
-from ..settings import SparkSettings, DEFAULTS
+from ..settings import SparkSettings, DEFAULTS, load_apps
+
+
+class TestApp:
+    pass
 
 
 class SparkSettingsTestCase(SimpleTestCase):
@@ -81,6 +85,14 @@ class SparkSettingsTestCase(SimpleTestCase):
         spark_settings = SparkSettings()
         self.assertEqual(spark_settings.DEFAULT_APP, DEFAULTS['DEFAULT_APP'])
 
+    def test_load_apps(self):
+        """
+        Test that `load_apps` dynamically loads string imports.
+        """
+        app_import_str = '{0}.{1}'.format(TestApp.__module__, TestApp.__name__)
+        apps = load_apps({'some_app': app_import_str})
+        self.assertIs(apps['some_app'], TestApp)
+
     def test_settings(self):
         """
         Test that settings in `SPARK` are properly assigned into the
@@ -89,7 +101,7 @@ class SparkSettingsTestCase(SimpleTestCase):
         username, password = 'user', 'pass'
         api_uri = 'http://api.somewhere.com'
         window = 10
-        apps = {'some_app', 'some_class'}
+        apps = {'some_app': TestApp}
         default_app = 'default_class'
         with self.settings(SPARK={
                 'CLOUD_USERNAME': username, 'CLOUD_PASSWORD': password, 'APPS': apps,

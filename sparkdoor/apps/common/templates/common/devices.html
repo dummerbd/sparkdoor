@@ -6,6 +6,7 @@
 {% block title %}Devices{% endblock title %}
 
 {% block body_js %}
+<script src="{% static 'js/qrcode.min.js' %}"></script>
 <script src="{% static 'js/door_app.js' %}"></script>
 {% endblock body_js %}
 
@@ -16,28 +17,40 @@ function csrfSafeMethod(method) {
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  var cookieValue = null;
+  if (document.cookie && document.cookie != '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = jQuery.trim(cookies[i]);
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) == (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 $(document).ready(function(evt) {
   var csrftoken = getCookie('csrftoken');
   $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
       }
+    }
+  });
+  $('#qr-btn').on('click', function() {
+    $("#reader").show();
+  });
+  $('#device_id').on('focus', function() {
+    $("#reader").hide();
+  });
+  $('#reader').html5_qrcode(function(data) {
+    $('#device_id').val(data);
+    $("#reader").hide();
+  }, function() {
+  }, function () {
   });
   $('#door_unlock_modal').on('show.bs.modal', function(evt) {
     var modal = $(this);
@@ -108,11 +121,17 @@ $(document).ready(function(evt) {
       <div class="form-group {% if form.device_id.errors %}has-error{% endif %}">
         <label for="id_device_id" class="col-sm-2 control-label">ID</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="id_device_id" name="device_id" placeholder="Enter your device ID">
-          {{ form.device_id.errors|first }}
+          <div class="input-group">
+            <input id="device_id" type="text" class="form-control" id="id_device_id" name="device_id" placeholder="Enter your device ID">
+            {{ form.device_id.errors|first }}
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button" id="qr-btn">Read QR</button>
+            </span>
+          </div>
         </div>
       </div>
-      <div class="form-group">
+      <div id="reader" style="width:300px;height:250px;display:none"></div>
+      <div class="form-group" id="submit-div">
         <div class="col-sm-offset-2 col-sm-10">
           <button type="submit" class="btn btn-primary">Register</button>
         </div>

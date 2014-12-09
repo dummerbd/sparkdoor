@@ -12,7 +12,7 @@ class DoorApp(DeviceAppBase):
     """
     Device app for `door` firmware.
     """
-    action_names = ['open', 'idcard']
+    action_names = ['open']
     template_name = 'common/door_app.html'
 
     def action(self, name, args=None):
@@ -30,20 +30,6 @@ class DoorApp(DeviceAppBase):
             self.device.call("open", None)
         except ServiceError as err:
             raise DeviceAppError('Device could not be reached', err.status_code)
-
-    def idcard(self, args):
-        """
-        Attempt to open using an ID card.
-        """
-        try:
-            uid = args['uid']
-        except:
-            raise DeviceAppError('Request must include a "uid" entry in POST data.', 400)
-        id_card = self.device.idcard_set.filter(uid=uid)
-        if len(id_card) > 0:
-            self.open({})
-        else:
-            raise DeviceAppError('UID was invalid.', 403)
 
     def invite(self, args):
         """

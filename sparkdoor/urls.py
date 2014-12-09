@@ -9,6 +9,9 @@ admin.autodiscover()
 
 
 urlpatterns = patterns('',
+    url(r'^',
+        include('sparkdoor.apps.common.urls', namespace='common')
+    ),
 
     url(r'^api/',
         include('sparkdoor.apps.spark.urls')
@@ -20,11 +23,6 @@ urlpatterns = patterns('',
 
     url(r'^accounts/',
         include('allauth.urls')
-    ),
-
-    # this needs to be last:
-    url(r'^',
-        include('sparkdoor.apps.common.urls', namespace='common')
     )
 )
 

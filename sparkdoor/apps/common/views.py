@@ -4,7 +4,7 @@ views.py - `common` app views module.
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.base import TemplateView
 
-from rest_framework import views, response, serializers
+from rest_framework import views, response, serializers, permissions
 
 from sparkdoor.apps.spark.views import UserDevicesViewBase
 
@@ -42,6 +42,8 @@ class IDCardOpenView(views.APIView):
     indicating that the door can be opened, a 200 is returned, otherwise
     a 403. 
     """
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request, *args, **kwargs):
         """
         POST handler.

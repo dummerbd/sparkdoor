@@ -21,6 +21,3 @@ class ProfileView(UserDevicesViewBase):
     """
     template_name = 'common/devices.html'
     success_url = reverse_lazy('common:profile')
-
-class QrcodeView(TemplateView):
-    template_name = 'common/qrcode.html'

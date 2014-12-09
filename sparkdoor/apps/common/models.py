@@ -63,3 +63,13 @@ class DoorPass(models.Model):
         Generate a random 20 character hex token.
         """
         return binascii.hexlify(os.urandom(20)).decode()
+
+
+class IDCard(models.Model):
+    """
+    Stores RFID cards that can be registered with a door and used to
+    open it.
+    """
+    uid = models.BigIntegerField(null=False)
+    device = models.ForeignKey(Device)
+    name = models.CharField(max_length=100)

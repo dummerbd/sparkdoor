@@ -12,7 +12,7 @@ class DoorApp(DeviceAppBase):
     """
     Device app for `door` firmware.
     """
-    action_names = ['open']
+    action_names = ['open', 'pair_id_card']
     template_name = 'common/door_app.html'
 
     def action(self, name, args=None):
@@ -31,14 +31,16 @@ class DoorApp(DeviceAppBase):
         except ServiceError as err:
             raise DeviceAppError('Device could not be reached', err.status_code)
 
-    def invite(self, args):
+    def pair_id_card(self, args):
         """
-        Invite someone to use this device by sending them a pass.
+        Read an ID card and pair it with this device.
         """
-        pass
-
-    def stats(self, args):
-        """
-        Return some basic useage stats about this device.
-        """
-        pass
+        try:
+            success = self.device.call("pair_id_card", None) == 0
+            uid = self.device.read("card_uid") if success else None
+        except ServiceError as err:
+            raise DeviceAppError('Device could not be reached', err.status_code)
+        if not success:
+            raise DeviceAppError('Card read timed out', 408)
+        name = args.get('name', None) if args else None
+        IDCard(device=self.device.id, uid=uid, name=name)

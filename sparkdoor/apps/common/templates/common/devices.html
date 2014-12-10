@@ -16,28 +16,28 @@ function csrfSafeMethod(method) {
   return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
+  var cookieValue = null;
+  if (document.cookie && document.cookie != '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+      var cookie = jQuery.trim(cookies[i]);
+      // Does this cookie string begin with the name we want?
+      if (cookie.substring(0, name.length + 1) == (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
     }
-    return cookieValue;
+  }
+  return cookieValue;
 }
 $(document).ready(function(evt) {
   var csrftoken = getCookie('csrftoken');
   $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-          if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-              xhr.setRequestHeader("X-CSRFToken", csrftoken);
-          }
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
       }
+    }
   });
   $('#door_unlock_modal').on('show.bs.modal', function(evt) {
     var modal = $(this);
@@ -55,7 +55,25 @@ $(document).ready(function(evt) {
     }).done(function(data, status, jqXHR) {
       text.show().text('Opened!');
     }).fail(function(data, status, jqXHR) {
-      text.show().text('Door could not be opened.');
+      text.show().text('Door does not appear to be connected.');
+    });
+  });
+  $('#pair_card_modal').on('show.bs.modal', function(evt) {
+    var modal = $(this);
+    var uri = $(evt.relatedTarget).data('uri');
+    var loader = modal.find('.ajax-loader');
+    var footer = modal.find('.modal-footer');
+    var text = modal.find('.modal-text');
+    loader.show();
+    footer.hide();
+    text.text('Place ID card against card reader to pair it with this door.');
+    $.post(uri).always(function() {
+      loader.hide();
+      footer.show();
+    }).done(function(data, status, jqXHR) {
+      text.text('ID card successfully paired!');
+    }).fail(function(data, status, jqXHR) {
+      text.text('Door is either not connected or the ID card could not be read.');
     });
   });
 });
@@ -66,6 +84,23 @@ $(document).ready(function(evt) {
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h4 class="modal-title">Opening <span class="door-name"></span></h4>
+      </div>
+      <div class="modal-body">
+        <img class="center-block ajax-loader" src="{% static 'img/ajax-loader.gif' %}">
+        <p class="modal-text"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn" data-dismiss="modal">Okay</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="pair_card_modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">Pairing New ID Card</h4>
       </div>
       <div class="modal-body">
         <img class="center-block ajax-loader" src="{% static 'img/ajax-loader.gif' %}">

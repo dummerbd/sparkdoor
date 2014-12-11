@@ -70,6 +70,6 @@ class IDCard(models.Model):
     Stores RFID cards that can be registered with a door and used to
     open it.
     """
-    uid = models.BigIntegerField(null=False)
+    uid = models.CharField(max_length=10, blank=False)
     device = models.ForeignKey(Device)
     name = models.CharField(max_length=100)

@@ -11,8 +11,7 @@
   <div class="panel-footer">
     <div class="btn-group btn-group-justified">
       <a class="btn btn-primary" data-toggle="modal" data-target="#door_unlock_modal" data-uri="{% url 'devices-action' pk=device.id action='open' %}">Unlock</a>
-      <a class="btn btn-default" data-uri="{% url 'devices-action' pk=device.id action='stats' %}">Stats</a>
-      <a class="btn btn-default" data-uri="{% url 'devices-action' pk=device.id action='invite' %}">Share</a>
+      <a class="btn btn-default" data-toggle="modal" data-target="#pair_card_modal" data-uri="{% url 'devices-action' pk=device.id action='pair_id_card' %}">Pair ID Card</a>
     </div>
   </div>
 </div>

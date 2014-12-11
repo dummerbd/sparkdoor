@@ -43,4 +43,4 @@ class DoorApp(DeviceAppBase):
         if not success:
             raise DeviceAppError('Card read timed out', 408)
         name = args.get('name', None) if args else None
-        IDCard(device=self.device, uid=uid, name=name)
+        IDCard(device=self.device, uid=uid, name=name).save()

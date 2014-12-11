@@ -72,4 +72,3 @@ class IDCard(models.Model):
     """
     uid = models.CharField(max_length=10, blank=False)
     device = models.ForeignKey(Device)
-    name = models.CharField(max_length=100)

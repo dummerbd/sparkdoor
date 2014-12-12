@@ -62,8 +62,8 @@ class IDCardOpenView(views.APIView):
         that corresponds to the provided `device_id`.
         """
         try:
-            card = IDCard.objects.get(device__device_id=data['device_id'],
+            cards = IDCard.objects.filter(device__device_id=data['device_id'],
                 uid=data['card_uid'])
         except:
             return False
-        return True
+        return cards.count() > 0
